@@ -1,5 +1,5 @@
 // ===== API Client =====
-const API_BASE = 'http://localhost:3001';
+const API_BASE = window.location.origin;
 
 async function apiRequest(method, path, data, isFormData, responseType) {
   const url = new URL(path, API_BASE);
@@ -90,12 +90,7 @@ function apiDelete(path) {
 // ===== API Modules =====
 
 const authAPI = {
-  login: (username, password) => {
-    const formData = new FormData();
-    formData.append('username', username);
-    formData.append('password', password);
-    return apiRequest('POST', '/api/auth/login', formData, true);
-  },
+  login: (email, password) => apiRequest('POST', '/api/auth/login', { email, password }),
   register: (data) => apiRequest('POST', '/api/auth/register', data),
   getProfile: () => apiRequest('GET', '/api/auth/me'),
   updateProfile: (data) => apiRequest('PUT', '/api/auth/me', data),

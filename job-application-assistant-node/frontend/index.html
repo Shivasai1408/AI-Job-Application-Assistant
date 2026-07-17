@@ -3140,13 +3140,22 @@
     // ===== LOGIN / REGISTER FORMS =====
     const loginForm = document.getElementById('login-form');
     if (loginForm) {
-      loginForm.addEventListener('submit', function(e) {
+      loginForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-        // Simulate login - store dummy user
         const email = document.getElementById('login-email').value;
-        const name = email.split('@')[0];
-        localStorage.setItem('token', 'dummy-jwt-token');
-        localStorage.setItem('user', JSON.stringify({ name: name, email: email, username: name }));
+        const password = document.getElementById('login-password').value;
+        const btn = loginForm.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        btn.textContent = 'Signing in...';
+        const { data, error } = await authAPI.login(email, password);
+        btn.disabled = false;
+        btn.textContent = 'Sign In';
+        if (error) {
+          alert('Login failed: ' + error);
+          return;
+        }
+        localStorage.setItem('access_token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
         updateUIForUser();
         navigateTo('dashboard');
       });
@@ -3154,11 +3163,26 @@
 
     const registerForm = document.getElementById('register-form');
     if (registerForm) {
-      registerForm.addEventListener('submit', function(e) {
+      registerForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-        const name = document.getElementById('reg-name').value;
-        localStorage.setItem('token', 'dummy-jwt-token');
-        localStorage.setItem('user', JSON.stringify({ name: name, email: document.getElementById('reg-email').value, username: document.getElementById('reg-username').value }));
+        const full_name = document.getElementById('reg-name').value;
+        const email = document.getElementById('reg-email').value;
+        const username = document.getElementById('reg-username').value;
+        const password = document.getElementById('reg-password').value;
+        const confirm = document.getElementById('reg-confirm').value;
+        if (password !== confirm) { alert('Passwords do not match!'); return; }
+        const btn = registerForm.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        btn.textContent = 'Creating account...';
+        const { data, error } = await authAPI.register({ full_name, email, username, password });
+        btn.disabled = false;
+        btn.textContent = 'Create Account';
+        if (error) {
+          alert('Registration failed: ' + error);
+          return;
+        }
+        localStorage.setItem('access_token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
         updateUIForUser();
         navigateTo('dashboard');
       });
@@ -3176,7 +3200,7 @@
     // ===== INIT =====
     // Check if user is logged in
     document.addEventListener('DOMContentLoaded', function() {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('access_token');
       if (token) {
         updateUIForUser();
         const page = getPageFromHash();
