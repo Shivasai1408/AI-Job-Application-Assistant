@@ -1,31 +1,31 @@
 /* ============================================
-   AI Job Application Assistant - Dark Premium Theme
-   Complete Design System v3.0
+   AI Job Application Assistant - Ultra Premium Theme
+   Complete Design System v4.0
    ============================================ */
 
 /* ============================================
    1. ROOT VARIABLES & THEME
    ============================================ */
 :root {
-  /* Primary Palette - Teal/Cyan */
-  --primary: #0d9488;
-  --primary-dark: #0f766e;
-  --primary-light: #5ee4d0;
-  --primary-lighter: #ccfbf1;
-  --primary-gradient: linear-gradient(135deg, #0d9488, #0891b2);
-  --primary-glow: 0 0 25px rgba(13, 148, 136, 0.35);
+  /* Primary Palette - Electric Blue/Violet */
+  --primary: #6366f1;
+  --primary-dark: #4f46e5;
+  --primary-light: #a5b4fc;
+  --primary-lighter: #e0e7ff;
+  --primary-gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
+  --primary-glow: 0 0 30px rgba(99, 102, 241, 0.4);
 
   /* Secondary Palette */
-  --secondary: #0891b2;
-  --secondary-dark: #0e7490;
-  --secondary-light: #67e8f9;
-  --secondary-gradient: linear-gradient(135deg, #0891b2, #0d9488);
+  --secondary: #8b5cf6;
+  --secondary-dark: #7c3aed;
+  --secondary-light: #c4b5fd;
+  --secondary-gradient: linear-gradient(135deg, #8b5cf6, #6366f1);
 
-  /* Accent */
-  --accent: #22d3ee;
+  /* Accent - Cyan */
+  --accent: #06b6d4;
   --accent-dark: #0891b2;
-  --accent-light: #a5f3fc;
-  --accent-gradient: linear-gradient(135deg, #22d3ee, #0d9488);
+  --accent-light: #67e8f9;
+  --accent-gradient: linear-gradient(135deg, #06b6d4, #6366f1);
 
   /* Semantic Colors */
   --success: #10b981;
@@ -49,41 +49,41 @@
   --info: #22d3ee;
   --info-bg: rgba(34, 211, 238, 0.15);
 
-  /* Dark Theme Backgrounds */
-  --bg-primary: #000000;
-  --bg-secondary: #0a0a0a;
-  --bg-tertiary: #1a1a1a;
+  /* Dark Theme Backgrounds - Deep Navy */
+  --bg-primary: #0a0a1a;
+  --bg-secondary: #0f0f23;
+  --bg-tertiary: #1a1a35;
   --bg-card: rgba(255, 255, 255, 0.04);
   --bg-card-hover: rgba(255, 255, 255, 0.07);
   --bg-glass: rgba(255, 255, 255, 0.05);
   --bg-glass-hover: rgba(255, 255, 255, 0.09);
-  --bg-sidebar: rgba(0, 0, 0, 0.96);
-  --bg-overlay: rgba(0, 0, 0, 0.8);
-  --bg-input: rgba(255, 255, 255, 0.05);
+  --bg-sidebar: rgba(10, 10, 26, 0.97);
+  --bg-overlay: rgba(0, 0, 0, 0.85);
+  --bg-input: rgba(255, 255, 255, 0.06);
 
   /* Text Colors */
-  --text-primary: #f0fdfa;
+  --text-primary: #f1f5f9;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
-  --text-inverse: #000000;
+  --text-inverse: #0a0a1a;
   --text-on-primary: #ffffff;
 
   /* Border Colors */
-  --border-color: rgba(255, 255, 255, 0.07);
-  --border-color-hover: rgba(255, 255, 255, 0.14);
+  --border-color: rgba(99, 102, 241, 0.12);
+  --border-color-hover: rgba(99, 102, 241, 0.25);
   --border-color-light: rgba(255, 255, 255, 0.04);
 
   /* Shadows */
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.5);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow: 0 4px 6px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 6px 12px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.6), 0 4px 10px rgba(0, 0, 0, 0.3);
-  --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.7), 0 8px 20px rgba(0, 0, 0, 0.4);
-  --shadow-glow-primary: 0 0 25px rgba(13, 148, 136, 0.35);
-  --shadow-glow-success: 0 0 25px rgba(16, 185, 129, 0.35);
-  --shadow-glow-danger: 0 0 25px rgba(239, 68, 68, 0.35);
-  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.6);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.6), 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.6), 0 2px 4px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 6px 12px rgba(0, 0, 0, 0.6), 0 2px 6px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.7), 0 4px 10px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.8), 0 8px 20px rgba(0, 0, 0, 0.5);
+  --shadow-glow-primary: 0 0 30px rgba(99, 102, 241, 0.4);
+  --shadow-glow-success: 0 0 30px rgba(16, 185, 129, 0.4);
+  --shadow-glow-danger: 0 0 30px rgba(239, 68, 68, 0.4);
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.5);
 
   /* Border Radius */
   --radius-xs: 2px;
