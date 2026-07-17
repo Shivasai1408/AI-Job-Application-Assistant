@@ -34,6 +34,7 @@ async function start() {
     const analyticsRoutes = require('./backend/routes/analytics');
     const adminRoutes = require('./backend/routes/admin');
     const downloadRoutes = require('./backend/routes/downloads');
+    const companyRoutes = require('./backend/routes/company');
 
     app.use('/api/auth', authRoutes);
     app.use('/api/resumes', resumeRoutes);
@@ -52,6 +53,7 @@ async function start() {
     app.use('/api/analytics', analyticsRoutes);
     app.use('/api/admin', adminRoutes);
     app.use('/api/downloads', downloadRoutes);
+    app.use('/api/company', companyRoutes);
 
     app.get('/', (req, res) => {
         res.sendFile(path.join(__dirname, 'frontend', 'index.html'));

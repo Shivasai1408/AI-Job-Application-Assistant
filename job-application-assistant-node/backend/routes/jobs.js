@@ -21,37 +21,58 @@ const MOCK_JOBS = [
 // GET /api/jobs/search
 router.get('/search', (req, res) => {
     const { q, location, job_type, experience_level, page = 1, limit = 10 } = req.query;
-    let filtered = [...MOCK_JOBS];
+
+    // Merge DB jobs + mock jobs
+    const dbJobs = db.prepare('SELECT * FROM jobs WHERE is_active = 1 ORDER BY created_at DESC').all();
+    let allJobs = [...dbJobs, ...MOCK_JOBS.filter(m => !dbJobs.find(d => d.id === m.id))];
 
     if (q) {
         const query = q.toLowerCase();
-        filtered = filtered.filter(j =>
-            j.title.toLowerCase().includes(query) ||
-            j.company.toLowerCase().includes(query) ||
-            j.skills_required.toLowerCase().includes(query)
+        allJobs = allJobs.filter(j =>
+            (j.title || '').toLowerCase().includes(query) ||
+            (j.company || '').toLowerCase().includes(query) ||
+            (j.skills_required || '').toLowerCase().includes(query)
         );
     }
-    if (location) filtered = filtered.filter(j => j.location.toLowerCase().includes(location.toLowerCase()));
-    if (job_type) filtered = filtered.filter(j => j.job_type.toLowerCase() === job_type.toLowerCase());
-    if (experience_level) filtered = filtered.filter(j => j.experience_level.toLowerCase() === experience_level.toLowerCase());
+    if (location) allJobs = allJobs.filter(j => (j.location || '').toLowerCase().includes(location.toLowerCase()));
+    if (job_type) allJobs = allJobs.filter(j => (j.job_type || '').toLowerCase() === job_type.toLowerCase());
+    if (experience_level) allJobs = allJobs.filter(j => (j.experience_level || '').toLowerCase() === experience_level.toLowerCase());
 
-    const total = filtered.length;
+    const total = allJobs.length;
     const start = (page - 1) * limit;
-    const paged = filtered.slice(start, start + parseInt(limit));
+    const paged = allJobs.slice(start, start + parseInt(limit));
 
-    res.json({
-        jobs: paged,
-        total,
-        page: parseInt(page),
-        limit: parseInt(limit),
-        total_pages: Math.ceil(total / limit)
-    });
+    res.json({ jobs: paged, total, page: parseInt(page), limit: parseInt(limit), total_pages: Math.ceil(total / limit) });
+});
+
+// GET /api/jobs (alias for search)
+router.get('/', (req, res) => {
+    const { q, query, location, job_type, experience_level, page = 1, limit = 20 } = req.query;
+    const searchQ = q || query || '';
+
+    const dbJobs = db.prepare('SELECT * FROM jobs WHERE is_active = 1 ORDER BY created_at DESC').all();
+    let allJobs = [...dbJobs, ...MOCK_JOBS.filter(m => !dbJobs.find(d => d.id === m.id))];
+
+    if (searchQ) {
+        const sq = searchQ.toLowerCase();
+        allJobs = allJobs.filter(j =>
+            (j.title || '').toLowerCase().includes(sq) ||
+            (j.company || '').toLowerCase().includes(sq) ||
+            (j.skills_required || '').toLowerCase().includes(sq)
+        );
+    }
+    if (location) allJobs = allJobs.filter(j => (j.location || '').toLowerCase().includes(location.toLowerCase()));
+    if (job_type && job_type !== 'All Types') allJobs = allJobs.filter(j => (j.job_type || '').toLowerCase() === job_type.toLowerCase());
+    if (experience_level) allJobs = allJobs.filter(j => (j.experience_level || '').toLowerCase() === experience_level.toLowerCase());
+
+    res.json({ jobs: allJobs, total: allJobs.length });
 });
 
 // GET /api/jobs/recommended
 router.get('/recommended', (req, res) => {
-    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.user.id);
-    const shuffled = [...MOCK_JOBS].sort(() => 0.5 - Math.random());
+    const dbJobs = db.prepare('SELECT * FROM jobs WHERE is_active = 1 ORDER BY created_at DESC').all();
+    const allJobs = [...dbJobs, ...MOCK_JOBS];
+    const shuffled = allJobs.sort(() => 0.5 - Math.random());
     res.json({ jobs: shuffled.slice(0, 5) });
 });
 

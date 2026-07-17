@@ -35,7 +35,22 @@ async function initDb() {
             summary TEXT,
             skills TEXT,
             experience_years INTEGER DEFAULT 0,
+            role TEXT DEFAULT 'jobseeker',
             is_active INTEGER DEFAULT 1,
+            created_at TEXT,
+            updated_at TEXT
+        );
+
+        CREATE TABLE IF NOT EXISTS company_profiles (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER UNIQUE,
+            company_name TEXT,
+            industry TEXT,
+            company_size TEXT,
+            website TEXT,
+            description TEXT,
+            location TEXT,
+            logo_url TEXT,
             created_at TEXT,
             updated_at TEXT
         );
@@ -63,6 +78,7 @@ async function initDb() {
 
         CREATE TABLE IF NOT EXISTS jobs (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            posted_by INTEGER,
             title TEXT,
             company TEXT,
             location TEXT,
@@ -72,7 +88,7 @@ async function initDb() {
             job_type TEXT,
             experience_level TEXT,
             industry TEXT,
-            source TEXT,
+            source TEXT DEFAULT 'company',
             source_url TEXT,
             posted_date TEXT,
             skills_required TEXT,

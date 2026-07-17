@@ -6,10 +6,12 @@ const { hashPassword, verifyPassword, generateToken, authMiddleware } = require(
 // POST /api/auth/register
 router.post('/register', (req, res) => {
     try {
-        const { username, email, password, full_name } = req.body;
+        const { username, email, password, full_name, role } = req.body;
         if (!username || !email || !password) {
             return res.status(400).json({ error: 'Username, email, and password are required' });
         }
+
+        const userRole = (role === 'company') ? 'company' : 'jobseeker';
 
         const existing = db.prepare('SELECT id FROM users WHERE username = ? OR email = ?').get(username, email);
         if (existing) {
@@ -19,10 +21,10 @@ router.post('/register', (req, res) => {
         const hashed = hashPassword(password);
         const now = new Date().toISOString();
         const result = db.prepare(
-            'INSERT INTO users (username, email, hashed_password, full_name, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)'
-        ).run(username, email, hashed, full_name || null, now, now);
+            'INSERT INTO users (username, email, hashed_password, full_name, role, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
+        ).run(username, email, hashed, full_name || null, userRole, now, now);
 
-        const user = { id: result.lastInsertRowid, username, email, full_name: full_name || null };
+        const user = { id: result.lastInsertRowid, username, email, full_name: full_name || null, role: userRole };
         const token = generateToken(user);
 
         res.status(201).json({ message: 'User registered successfully', user, token });
