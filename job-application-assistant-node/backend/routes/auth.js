@@ -156,14 +156,14 @@ router.post('/verify-otp', (req, res) => {
 // POST /api/auth/reset-password
 router.post('/reset-password', (req, res) => {
     try {
-        const { email, reset_token, new_password } = req.body;
-        if (!email || !reset_token || !new_password) {
-            return res.status(400).json({ error: 'Email, reset token, and new password are required' });
+        const { reset_token, new_password } = req.body;
+        if (!reset_token || !new_password) {
+            return res.status(400).json({ error: 'Reset token and new password are required' });
         }
 
         const record = db.prepare(
-            'SELECT * FROM otps WHERE email = ? AND reset_token = ? AND is_used = 0 AND expires_at > ?'
-        ).get(email, reset_token, new Date().toISOString());
+            'SELECT * FROM otps WHERE reset_token = ? AND is_used = 0 AND expires_at > ?'
+        ).get(reset_token, new Date().toISOString());
 
         if (!record) {
             return res.status(400).json({ error: 'Invalid or expired reset token' });

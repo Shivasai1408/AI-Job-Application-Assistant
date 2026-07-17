@@ -797,6 +797,56 @@ async function searchJobs() {
 
 
 // ============================================================
+// PAGE: Job Details
+// ============================================================
+window.initJobDetails = function() {
+  // Bind apply button
+  const applyBtn = document.querySelector('#page-job-details .btn-primary');
+  if (applyBtn) {
+    applyBtn.addEventListener('click', async function() {
+      this.disabled = true;
+      this.textContent = 'Applying...';
+      const result = await applicationsAPI.create({ job_title: 'Senior Frontend Developer', company: 'TechCorp Inc.', status: 'applied' });
+      this.disabled = false;
+      this.textContent = result.error ? '❌ Failed' : '✅ Applied!';
+      if (!result.error) setTimeout(() => { this.textContent = '📝 Apply Now'; }, 2000);
+    });
+  }
+};
+
+
+// ============================================================
+// PAGE: Auto-Apply
+// ============================================================
+window.initAutoApply = function() {
+  const form = document.querySelector('#page-auto-apply form');
+  if (!form) return;
+  const newForm = form.cloneNode(true);
+  form.parentNode.replaceChild(newForm, form);
+
+  newForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const inputs = this.querySelectorAll('input, select');
+    const data = {};
+    inputs.forEach(function(input) {
+      data[input.placeholder?.toLowerCase().replace(/\s+/g, '_') || input.type || 'field'] = input.value;
+    });
+
+    const btn = this.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btn.textContent = 'Starting...';
+
+    const result = await autoApplyAPI.prepare(data);
+    btn.disabled = false;
+    btn.textContent = '⚡ Start Auto-Apply';
+
+    if (result.error) showError(this, result.error);
+    else showSuccess(this, 'Auto-apply started! Check back for results.');
+  });
+};
+
+
+// ============================================================
 // PAGE: Applications
 // ============================================================
 window.initApplications = function() {

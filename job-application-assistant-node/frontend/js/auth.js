@@ -30,7 +30,8 @@ function isAuthenticated() {
 
 function logout() {
   localStorage.removeItem('access_token');
+  localStorage.removeItem('token');
   localStorage.removeItem('user');
-  window.location.hash = '#login';
+  window.location.hash = 'login';
   window.location.reload();
 }

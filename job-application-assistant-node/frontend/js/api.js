@@ -19,7 +19,7 @@ async function apiRequest(method, path, data, isFormData, responseType) {
   };
 
   // Add Authorization header if token exists
-  const token = localStorage.getItem('access_token');
+  const token = getToken();
   if (token) {
     options.headers['Authorization'] = 'Bearer ' + token;
   }
