@@ -3138,55 +3138,7 @@
     }
 
     // ===== LOGIN / REGISTER FORMS =====
-    const loginForm = document.getElementById('login-form');
-    if (loginForm) {
-      loginForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const email = document.getElementById('login-email').value;
-        const password = document.getElementById('login-password').value;
-        const btn = loginForm.querySelector('button[type="submit"]');
-        btn.disabled = true;
-        btn.textContent = 'Signing in...';
-        const { data, error } = await authAPI.login(email, password);
-        btn.disabled = false;
-        btn.textContent = 'Sign In';
-        if (error) {
-          alert('Login failed: ' + error);
-          return;
-        }
-        localStorage.setItem('access_token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
-        updateUIForUser();
-        navigateTo('dashboard');
-      });
-    }
-
-    const registerForm = document.getElementById('register-form');
-    if (registerForm) {
-      registerForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const full_name = document.getElementById('reg-name').value;
-        const email = document.getElementById('reg-email').value;
-        const username = document.getElementById('reg-username').value;
-        const password = document.getElementById('reg-password').value;
-        const confirm = document.getElementById('reg-confirm').value;
-        if (password !== confirm) { alert('Passwords do not match!'); return; }
-        const btn = registerForm.querySelector('button[type="submit"]');
-        btn.disabled = true;
-        btn.textContent = 'Creating account...';
-        const { data, error } = await authAPI.register({ full_name, email, username, password });
-        btn.disabled = false;
-        btn.textContent = 'Create Account';
-        if (error) {
-          alert('Registration failed: ' + error);
-          return;
-        }
-        localStorage.setItem('access_token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
-        updateUIForUser();
-        navigateTo('dashboard');
-      });
-    }
+    // Login and Register are handled by app.js initLogin / initRegister
 
     // ===== HASH ROUTING =====
     function handleHashChange() {

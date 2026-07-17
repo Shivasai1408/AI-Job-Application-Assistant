@@ -138,7 +138,7 @@ window.initLogin = function() {
       return;
     }
 
-    setAuthData(result.data.access_token, result.data.user || { name: email.split('@')[0], email: email });
+    setAuthData(result.data.token || result.data.access_token, result.data.user || { name: email.split('@')[0], email: email });
     navigateTo('dashboard');
   });
 };
@@ -190,7 +190,7 @@ window.initRegister = function() {
       return;
     }
 
-    setAuthData(result.data.access_token, result.data.user || { name: name, email: email, username: username });
+    setAuthData(result.data.token || result.data.access_token, result.data.user || { name: name, email: email, username: username });
     navigateTo('dashboard');
   });
 };

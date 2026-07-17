@@ -10,7 +10,7 @@ function setAuthData(token, user) {
 }
 
 function getToken() {
-  return localStorage.getItem('access_token');
+  return localStorage.getItem('access_token') || localStorage.getItem('token');
 }
 
 function getUser() {
