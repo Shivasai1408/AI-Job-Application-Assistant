@@ -1,0 +1,3262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JobAI - Intelligent Job Application Assistant</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Base Reset & Variables */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg-primary: #000000;
+      --bg-secondary: #0a0a0a;
+      --bg-card: rgba(255,255,255,0.04);
+      --bg-card-hover: rgba(255,255,255,0.07);
+      --bg-sidebar: #050505;
+      --border-color: rgba(255,255,255,0.06);
+      --border-light: rgba(255,255,255,0.1);
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255,255,255,0.6);
+      --text-muted: rgba(255,255,255,0.35);
+      --accent: #0d9488;
+      --accent-hover: #0f766e;
+      --accent-glow: rgba(13,148,136,0.2);
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --success: #10b981;
+      --info: #3b82f6;
+      --sidebar-width: 280px;
+      --topbar-height: 64px;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --radius-lg: 16px;
+      --shadow: 0 0 0 1px rgba(255,255,255,0.04), 0 4px 24px rgba(0,0,0,0.4);
+      --shadow-lg: 0 0 0 1px rgba(255,255,255,0.06), 0 8px 48px rgba(0,0,0,0.6);
+      --transition: all 0.2s ease;
+    }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--accent); text-decoration: none; transition: var(--transition); }
+    a:hover { color: var(--accent-hover); }
+    img { max-width: 100%; display: block; }
+    input, textarea, select, button { font-family: inherit; font-size: inherit; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+    /* App Layout */
+    .app-layout { display: flex; min-height: 100vh; display: none; }
+    .app-layout.active { display: flex; }
+
+    /* Auth Pages */
+    .auth-container {
+      display: none;
+      min-height: 100vh;
+      background: var(--bg-primary);
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .auth-container.active { display: flex; }
+    .auth-card {
+      width: 100%;
+      max-width: 440px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 48px 40px;
+      box-shadow: var(--shadow-lg);
+    }
+    .auth-card .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 32px;
+    }
+    .auth-card .sidebar-logo-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), #0f766e);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 20px;
+      color: #fff;
+      box-shadow: 0 0 30px var(--accent-glow);
+    }
+    .auth-card .sidebar-logo-text { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; }
+    .auth-card .sidebar-logo-sub { font-size: 12px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+    .auth-title { font-size: 24px; font-weight: 700; text-align: center; margin-bottom: 8px; }
+    .auth-subtitle { font-size: 14px; color: var(--text-secondary); text-align: center; margin-bottom: 32px; }
+    .auth-footer { text-align: center; margin-top: 24px; font-size: 14px; color: var(--text-secondary); }
+    .auth-footer a { color: var(--accent); font-weight: 500; }
+    .auth-step-dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .auth-step-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border-light);
+      transition: var(--transition);
+    }
+    .auth-step-dot.active { background: var(--accent); box-shadow: 0 0 10px var(--accent-glow); }
+    .auth-step-dot.completed { background: var(--success); }
+    .auth-step { display: none; }
+    .auth-step.active { display: block; }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: var(--sidebar-width);
+      height: 100vh;
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+      transition: transform 0.3s ease;
+    }
+    .sidebar-header {
+      padding: 24px 20px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .sidebar-logo-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), #0f766e);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 18px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .sidebar-logo-text { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+    .sidebar-logo-sub { font-size: 10px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+    .sidebar-logo-text-wrap { display: flex; flex-direction: column; }
+    .sidebar-nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 12px;
+    }
+    .sidebar-nav-section { margin-bottom: 20px; }
+    .sidebar-nav-section:last-child { margin-bottom: 0; }
+    .sidebar-nav-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      padding: 0 12px;
+      margin-bottom: 8px;
+    }
+    .sidebar-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 400;
+      cursor: pointer;
+      transition: var(--transition);
+      text-decoration: none;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+    }
+    .sidebar-nav-item:hover {
+      background: var(--bg-card);
+      color: var(--text-primary);
+    }
+    .sidebar-nav-item.active {
+      background: rgba(13,148,136,0.12);
+      color: var(--accent);
+      font-weight: 500;
+    }
+    .sidebar-nav-item .nav-icon { font-size: 18px; width: 24px; text-align: center; flex-shrink: 0; }
+    .sidebar-footer {
+      padding: 16px 12px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    /* Mobile Toggle */
+    .mobile-toggle {
+      display: none;
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 200;
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      z-index: 99;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Topbar */
+    .topbar {
+      height: var(--topbar-height);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 12px; }
+    .topbar-title { font-size: 18px; font-weight: 600; }
+    .topbar-right { display: flex; align-items: center; gap: 16px; }
+    .topbar-welcome { font-size: 14px; color: var(--text-secondary); }
+    .topbar-user {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #0f766e);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 13px;
+      color: #fff;
+    }
+
+    /* Page Content */
+    .page-content { padding: 32px; flex: 1; }
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* Page Header */
+    .page-header { margin-bottom: 32px; }
+    .page-title { font-size: 28px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
+    .page-subtitle { font-size: 14px; color: var(--text-secondary); max-width: 600px; }
+
+    /* Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 24px;
+      transition: var(--transition);
+    }
+    .card:hover { border-color: var(--border-light); }
+    .card-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+    .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .card-body { }
+    .card-footer { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-color); }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      font-weight: 500;
+      font-size: 14px;
+      cursor: pointer;
+      transition: var(--transition);
+      border: 1px solid transparent;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .btn:hover { opacity: 0.9; }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+    .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+    .btn-secondary {
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border-color: var(--border-light);
+    }
+    .btn-secondary:hover { background: var(--bg-card-hover); }
+    .btn-danger {
+      background: rgba(239,68,68,0.12);
+      color: var(--danger);
+      border-color: rgba(239,68,68,0.2);
+    }
+    .btn-danger:hover { background: rgba(239,68,68,0.2); }
+    .btn-success {
+      background: rgba(16,185,129,0.12);
+      color: var(--success);
+      border-color: rgba(16,185,129,0.2);
+    }
+    .btn-sm { padding: 6px 14px; font-size: 13px; }
+    .btn-lg { padding: 14px 28px; font-size: 16px; }
+    .btn-block { width: 100%; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-icon { width: 36px; height: 36px; padding: 0; border-radius: var(--radius-sm); }
+
+    /* Forms */
+    .form-group { margin-bottom: 20px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+    .form-input,
+    .form-textarea,
+    .form-select {
+      width: 100%;
+      padding: 10px 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-size: 14px;
+      transition: var(--transition);
+      outline: none;
+    }
+    .form-input:focus,
+    .form-textarea:focus,
+    .form-select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    .form-input::placeholder,
+    .form-textarea::placeholder { color: var(--text-muted); }
+    .form-textarea { min-height: 100px; resize: vertical; }
+    .form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='rgba(255,255,255,0.4)' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
+    .form-check {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+    .form-check input[type="checkbox"],
+    .form-check input[type="radio"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--accent);
+    }
+    .form-error { font-size: 12px; color: var(--danger); margin-top: 4px; }
+
+    /* Stat Cards */
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 24px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      transition: var(--transition);
+    }
+    .stat-card:hover { border-color: var(--border-light); transform: translateY(-2px); }
+    .stat-card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-sm);
+      background: var(--accent-glow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+    .stat-card-info { flex: 1; }
+    .stat-card-value { font-size: 28px; font-weight: 700; line-height: 1.2; }
+    .stat-card-label { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .badge-primary { background: rgba(13,148,136,0.12); color: var(--accent); }
+    .badge-success { background: rgba(16,185,129,0.12); color: var(--success); }
+    .badge-warning { background: rgba(245,158,11,0.12); color: var(--warning); }
+    .badge-danger { background: rgba(239,68,68,0.12); color: var(--danger); }
+    .badge-info { background: rgba(59,130,246,0.12); color: var(--info); }
+
+    /* Tags */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .tag-primary { background: rgba(13,148,136,0.12); color: var(--accent); }
+    .tag-success { background: rgba(16,185,129,0.12); color: var(--success); }
+    .tag-warning { background: rgba(245,158,11,0.12); color: var(--warning); }
+    .tag-danger { background: rgba(239,68,68,0.12); color: var(--danger); }
+    .tag-info { background: rgba(59,130,246,0.12); color: var(--info); }
+
+    /* Grids */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    .grid-auto { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+
+    /* Flex */
+    .flex { display: flex; }
+    .flex-center { display: flex; align-items: center; justify-content: center; }
+    .flex-between { display: flex; align-items: center; justify-content: space-between; }
+    .flex-col { display: flex; flex-direction: column; }
+    .gap-8 { gap: 8px; }
+    .gap-12 { gap: 12px; }
+    .gap-16 { gap: 16px; }
+    .gap-20 { gap: 20px; }
+    .gap-24 { gap: 24px; }
+
+    /* Text */
+    .text-gradient-primary {
+      background: linear-gradient(135deg, var(--accent), #0ea5e9, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .text-muted { color: var(--text-muted); }
+    .text-secondary { color: var(--text-secondary); }
+    .text-center { text-align: center; }
+    .text-sm { font-size: 13px; }
+    .text-xs { font-size: 11px; }
+    .text-lg { font-size: 18px; }
+    .text-xl { font-size: 24px; }
+    .font-bold { font-weight: 700; }
+    .font-medium { font-weight: 500; }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-secondary);
+    }
+    .empty-state-icon { font-size: 48px; margin-bottom: 16px; }
+    .empty-state-title { font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; }
+    .empty-state-text { font-size: 14px; margin-bottom: 20px; }
+
+    /* Loading */
+    .loading-spinner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--border-color);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Alert */
+    .alert {
+      padding: 14px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .alert-danger { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); color: var(--danger); }
+    .alert-success { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); color: var(--success); }
+    .alert-warning { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.2); color: var(--warning); }
+    .alert-info { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2); color: var(--info); }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      max-width: 520px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+    }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .modal-title { font-size: 18px; font-weight: 600; }
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+    .modal-close:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+    .modal-body { margin-bottom: 20px; }
+    .modal-footer { display: flex; justify-content: flex-end; gap: 12px; }
+
+    /* Table */
+    .table-container { overflow-x: auto; }
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .table th,
+    .table td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 14px;
+    }
+    .table th {
+      font-weight: 500;
+      color: var(--text-secondary);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .table tr:hover td { background: rgba(255,255,255,0.02); }
+    .table tr:last-child td { border-bottom: none; }
+
+    /* Timeline */
+    .timeline { position: relative; padding-left: 24px; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 6px;
+      top: 8px;
+      bottom: 8px;
+      width: 2px;
+      background: var(--border-color);
+    }
+    .timeline-item {
+      position: relative;
+      padding-bottom: 24px;
+    }
+    .timeline-item:last-child { padding-bottom: 0; }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -21px;
+      top: 6px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid var(--bg-primary);
+    }
+    .timeline-item.completed::before { background: var(--success); }
+    .timeline-item.pending::before { background: var(--text-muted); }
+    .timeline-item-title { font-size: 14px; font-weight: 500; }
+    .timeline-item-subtitle { font-size: 12px; color: var(--text-secondary); }
+    .timeline-item-date { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+    /* Divider */
+    .divider { height: 1px; background: var(--border-color); margin: 24px 0; }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .grid-4 { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .mobile-toggle { display: flex; }
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-overlay.open { display: block; }
+      .main-content { margin-left: 0; }
+      .topbar { padding: 0 16px; }
+      .page-content { padding: 20px 16px; }
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+      .page-title { font-size: 22px; }
+      .auth-card { padding: 32px 24px; }
+      .topbar-title { font-size: 15px; }
+      .topbar-welcome { display: none; }
+    }
+
+    /* Pipeline / Kanban */
+    .pipeline { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+    .pipeline-column {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 16px;
+    }
+    .pipeline-column-title { font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .pipeline-item {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .pipeline-item:hover { background: rgba(255,255,255,0.06); }
+    .pipeline-item:last-child { margin-bottom: 0; }
+    .pipeline-item-title { font-size: 13px; font-weight: 500; }
+    .pipeline-item-sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+    /* Template Card */
+    .template-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 20px;
+      text-align: center;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+    .template-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .template-card-preview {
+      height: 200px;
+      background: rgba(255,255,255,0.03);
+      border-radius: var(--radius-sm);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      border: 1px solid var(--border-color);
+    }
+    .template-card-title { font-size: 14px; font-weight: 600; }
+    .template-card-sub { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+
+    /* Job Card */
+    .job-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 20px;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+    .job-card:hover { border-color: var(--border-light); transform: translateY(-1px); }
+    .job-card-title { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+    .job-card-company { font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; }
+    .job-card-details { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+    .job-card-detail { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
+    .job-card-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--border-color); }
+
+    /* Wizard Steps */
+    .wizard-steps { display: flex; gap: 8px; margin-bottom: 32px; }
+    .wizard-step {
+      flex: 1;
+      padding: 12px 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-muted);
+      transition: var(--transition);
+    }
+    .wizard-step.active { border-color: var(--accent); color: var(--accent); background: rgba(13,148,136,0.08); }
+    .wizard-step.completed { border-color: var(--success); color: var(--success); }
+
+    /* Tabs */
+    .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border-color); margin-bottom: 24px; }
+    .tab {
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      border: none;
+      background: none;
+      border-bottom: 2px solid transparent;
+      transition: var(--transition);
+    }
+    .tab:hover { color: var(--text-primary); }
+    .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    /* Progress Bar */
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: var(--border-color);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      background: linear-gradient(90deg, var(--accent), #0ea5e9);
+      transition: width 0.4s ease;
+    }
+
+    /* Chart Placeholder */
+    .chart-placeholder {
+      height: 200px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    /* Calendar */
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+    .calendar-header {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      padding: 8px 0;
+    }
+    .calendar-day {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition);
+      background: var(--bg-card);
+    }
+    .calendar-day:hover { background: var(--bg-card-hover); }
+    .calendar-day.today { border: 1px solid var(--accent); color: var(--accent); }
+    .calendar-day.has-event { background: rgba(13,148,136,0.15); color: var(--accent); }
+    .calendar-day.empty { background: none; cursor: default; }
+    .calendar-day.other-month { color: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+  <!-- ============ AUTH PAGES ============ -->
+
+  <!-- Login -->
+  <div id="page-login" class="auth-container active">
+    <div class="auth-card">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">AI</div>
+        <div>
+          <div class="sidebar-logo-text">JobAI</div>
+          <div class="sidebar-logo-sub">Application Assistant</div>
+        </div>
+      </div>
+      <h1 class="auth-title">Welcome Back</h1>
+      <p class="auth-subtitle">Sign in to continue to your job search dashboard</p>
+      <form id="login-form">
+        <div class="form-group">
+          <label class="form-label" for="login-email">Email Address</label>
+          <input type="email" id="login-email" class="form-input" placeholder="you@example.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="login-password">Password</label>
+          <input type="password" id="login-password" class="form-input" placeholder="Enter your password" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block btn-lg">Sign In</button>
+      </form>
+      <div class="auth-footer">
+        Don't have an account? <a href="#" onclick="navigateTo('register');return false">Create one</a>
+        <br><br>
+        <a href="#" onclick="navigateTo('forgot-password');return false">Forgot your password?</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Register -->
+  <div id="page-register" class="auth-container">
+    <div class="auth-card">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">AI</div>
+        <div>
+          <div class="sidebar-logo-text">JobAI</div>
+          <div class="sidebar-logo-sub">Application Assistant</div>
+        </div>
+      </div>
+      <h1 class="auth-title">Create Account</h1>
+      <p class="auth-subtitle">Start your intelligent job search journey</p>
+      <form id="register-form">
+        <div class="form-group">
+          <label class="form-label" for="reg-name">Full Name</label>
+          <input type="text" id="reg-name" class="form-input" placeholder="John Doe" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="reg-email">Email Address</label>
+          <input type="email" id="reg-email" class="form-input" placeholder="you@example.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="reg-username">Username</label>
+          <input type="text" id="reg-username" class="form-input" placeholder="johndoe" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="reg-password">Password</label>
+            <input type="password" id="reg-password" class="form-input" placeholder="Create a password" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="reg-confirm">Confirm Password</label>
+            <input type="password" id="reg-confirm" class="form-input" placeholder="Confirm password" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="reg-role">I'm a</label>
+          <select id="reg-role" class="form-input">
+            <option value="jobseeker">Job Seeker</option>
+            <option value="company">Employer / Company</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block btn-lg">Create Account</button>
+      </form>
+      <div class="auth-footer">
+        Already have an account? <a href="#" onclick="navigateTo('login');return false">Sign in</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Forgot Password -->
+  <div id="page-forgot-password" class="auth-container">
+    <div class="auth-card">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">AI</div>
+        <div>
+          <div class="sidebar-logo-text">JobAI</div>
+          <div class="sidebar-logo-sub">Application Assistant</div>
+        </div>
+      </div>
+      <h1 class="auth-title">Reset Password</h1>
+      <p class="auth-subtitle">We'll help you regain access to your account</p>
+
+      <!-- Step dots -->
+      <div class="auth-step-dots">
+        <div class="auth-step-dot active" data-step="1"></div>
+        <div class="auth-step-dot" data-step="2"></div>
+        <div class="auth-step-dot" data-step="3"></div>
+      </div>
+
+      <!-- Step 1: Email -->
+      <div class="auth-step active" data-step="1">
+        <form id="forgot-step-1">
+          <div class="form-group">
+            <label class="form-label" for="forgot-email">Email Address</label>
+            <input type="email" id="forgot-email" class="form-input" placeholder="you@example.com" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Send OTP</button>
+        </form>
+      </div>
+
+      <!-- Step 2: OTP -->
+      <div class="auth-step" data-step="2">
+        <form id="forgot-step-2">
+          <div class="form-group">
+            <label class="form-label" for="forgot-otp">Enter OTP</label>
+            <input type="text" id="forgot-otp" class="form-input" placeholder="6-digit code" maxlength="6" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Verify OTP</button>
+        </form>
+      </div>
+
+      <!-- Step 3: New Password -->
+      <div class="auth-step" data-step="3">
+        <form id="forgot-step-3">
+          <div class="form-group">
+            <label class="form-label" for="forgot-newpass">New Password</label>
+            <input type="password" id="forgot-newpass" class="form-input" placeholder="Enter new password" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="forgot-confirm">Confirm New Password</label>
+            <input type="password" id="forgot-confirm" class="form-input" placeholder="Confirm new password" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Reset Password</button>
+        </form>
+      </div>
+
+      <div class="auth-footer">
+        Remember your password? <a href="#" onclick="navigateTo('login');return false">Sign in</a>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ============ APP LAYOUT ============ -->
+
+  <div class="app-layout" id="app-layout">
+
+    <!-- Mobile Overlay -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Mobile Toggle -->
+    <button class="mobile-toggle" id="mobile-toggle" onclick="toggleSidebar()">☰</button>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo-icon">AI</div>
+        <div class="sidebar-logo-text-wrap">
+          <div class="sidebar-logo-text">JobAI</div>
+          <div class="sidebar-logo-sub">Application Assistant</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <!-- Employee Sidebar (visible when role is jobseeker) -->
+        <div class="sidebar-section-employee">
+          <!-- Overview -->
+          <div class="sidebar-nav-section">
+            <div class="sidebar-nav-label">Overview</div>
+            <a class="sidebar-nav-item active" href="#dashboard" onclick="navigateTo('dashboard')">
+              <span class="nav-icon">📊</span> Dashboard
+            </a>
+          </div>
+
+          <!-- Resumes & Skills -->
+          <div class="sidebar-nav-section">
+            <div class="sidebar-nav-label">Resumes &amp; Skills</div>
+            <a class="sidebar-nav-item" href="#resumes" onclick="navigateTo('resumes')">
+              <span class="nav-icon">📄</span> My Resumes
+            </a>
+            <a class="sidebar-nav-item" href="#resume-builder" onclick="navigateTo('resume-builder')">
+              <span class="nav-icon">🎨</span> Resume Builder
+            </a>
+            <a class="sidebar-nav-item" href="#resume-templates" onclick="navigateTo('resume-templates')">
+              <span class="nav-icon">📋</span> Resume Templates
+            </a>
+            <a class="sidebar-nav-item" href="#ats-score" onclick="navigateTo('ats-score')">
+              <span class="nav-icon">🎯</span> ATS Score
+            </a>
+            <a class="sidebar-nav-item" href="#skill-gap" onclick="navigateTo('skill-gap')">
+              <span class="nav-icon">🧠</span> Skill Gap
+            </a>
+          </div>
+
+          <!-- Jobs & Applications -->
+          <div class="sidebar-nav-section">
+            <div class="sidebar-nav-label">Jobs &amp; Applications</div>
+            <a class="sidebar-nav-item" href="#jobs" onclick="navigateTo('jobs')">
+              <span class="nav-icon">🔍</span> Job Search
+            </a>
+            <a class="sidebar-nav-item" href="#applications" onclick="navigateTo('applications')">
+              <span class="nav-icon">📋</span> Applications
+            </a>
+            <a class="sidebar-nav-item" href="#interviews" onclick="navigateTo('interviews')">
+              <span class="nav-icon">📅</span> Interviews
+            </a>
+            <a class="sidebar-nav-item" href="#auto-apply" onclick="navigateTo('auto-apply')">
+              <span class="nav-icon">⚡</span> Auto-Apply
+            </a>
+          </div>
+
+          <!-- More -->
+          <div class="sidebar-nav-section">
+            <div class="sidebar-nav-label">More</div>
+            <a class="sidebar-nav-item" href="#cover-letters" onclick="navigateTo('cover-letters')">
+              <span class="nav-icon">✉️</span> Cover Letters
+            </a>
+            <a class="sidebar-nav-item" href="#alerts" onclick="navigateTo('alerts')">
+              <span class="nav-icon">🔔</span> Job Alerts
+            </a>
+            <a class="sidebar-nav-item" href="#email-generator" onclick="navigateTo('email-generator')">
+              <span class="nav-icon">📧</span> Email Generator
+            </a>
+            <a class="sidebar-nav-item" href="#downloads" onclick="navigateTo('downloads')">
+              <span class="nav-icon">📥</span> Downloads
+            </a>
+            <a class="sidebar-nav-item" href="#profile" onclick="navigateTo('profile')">
+              <span class="nav-icon">👤</span> Profile
+            </a>
+          </div>
+
+          <!-- AI Tools -->
+          <div class="sidebar-nav-section">
+            <div class="sidebar-nav-label">AI Tools</div>
+            <a class="sidebar-nav-item" href="#career-advisor" onclick="navigateTo('career-advisor')">
+              <span class="nav-icon">🧭</span> Career Advisor
+            </a>
+            <a class="sidebar-nav-item" href="#interview-prep" onclick="navigateTo('interview-prep')">
+              <span class="nav-icon">🎤</span> Interview Prep
+            </a>
+            <a class="sidebar-nav-item" href="#job-analyzer" onclick="navigateTo('job-analyzer')">
+              <span class="nav-icon">🔬</span> Job Analyzer
+            </a>
+            <a class="sidebar-nav-item" href="#linkedin-optimizer" onclick="navigateTo('linkedin-optimizer')">
+              <span class="nav-icon">💼</span> LinkedIn Opt.
+            </a>
+            <a class="sidebar-nav-item" href="#portfolio" onclick="navigateTo('portfolio')">
+              <span class="nav-icon">🌐</span> Portfolio
+            </a>
+            <a class="sidebar-nav-item" href="#analytics" onclick="navigateTo('analytics')">
+              <span class="nav-icon">📈</span> Analytics
+            </a>
+            <a class="sidebar-nav-item" href="#admin" onclick="navigateTo('admin')">
+              <span class="nav-icon">⚙️</span> Admin Panel
+            </a>
+          </div>
+        </div>
+
+        <!-- Company Sidebar (visible when role is company) -->
+        <div class="sidebar-section-company" style="display:none;">
+          <div class="sidebar-nav-section">
+            <div class="sidebar-nav-label">Company Portal</div>
+            <a class="sidebar-nav-item" href="#company-dashboard" onclick="navigateTo('company-dashboard')">
+              <span class="nav-icon">🏢</span> Dashboard
+            </a>
+            <a class="sidebar-nav-item" href="#company-profile" onclick="navigateTo('company-profile')">
+              <span class="nav-icon">✏️</span> Company Profile
+            </a>
+          </div>
+          <div class="sidebar-nav-section">
+            <div class="sidebar-nav-label">Jobs</div>
+            <a class="sidebar-nav-item" href="#company-jobs" onclick="navigateTo('company-jobs')">
+              <span class="nav-icon">📋</span> My Jobs
+            </a>
+            <a class="sidebar-nav-item" href="#company-post-job" onclick="navigateTo('company-post-job')">
+              <span class="nav-icon">📝</span> Post a Job
+            </a>
+            <a class="sidebar-nav-item" href="#company-applicants" onclick="navigateTo('company-applicants')">
+              <span class="nav-icon">👥</span> Applicants
+            </a>
+          </div>
+          <div class="sidebar-nav-section">
+            <div class="sidebar-nav-label">Account</div>
+            <a class="sidebar-nav-item" href="#profile" onclick="navigateTo('profile')">
+              <span class="nav-icon">👤</span> My Profile
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="sidebar-nav-item" onclick="logout()">
+          <span class="nav-icon">🚪</span> Logout
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+      <!-- Topbar -->
+      <div class="topbar">
+        <div class="topbar-left">
+          <div class="topbar-title" id="page-title">Dashboard</div>
+        </div>
+        <div class="topbar-right">
+          <span class="topbar-welcome" id="welcome-message">Welcome back, <strong id="user-name">User</strong></span>
+          <div class="topbar-user" id="user-avatar">U</div>
+        </div>
+      </div>
+
+      <!-- Page Content Container -->
+      <div class="page-content">
+
+        <!-- ===== DASHBOARD ===== -->
+        <div id="page-dashboard" class="page active">
+          <div class="page-header">
+            <h1 class="page-title">📊 Dashboard</h1>
+            <p class="page-subtitle">Your job search overview at a glance</p>
+          </div>
+
+          <!-- Welcome Banner -->
+          <div class="card" style="margin-bottom:24px;background:linear-gradient(135deg,rgba(13,148,136,0.08),rgba(13,148,136,0.02));border-color:rgba(13,148,136,0.15);">
+            <h2 style="font-size:22px;font-weight:700;margin-bottom:8px;">Welcome to <span class="text-gradient-primary">JobAI</span></h2>
+            <p style="color:var(--text-secondary);font-size:14px;">Your intelligent job application assistant. Track applications, optimize resumes, and land your dream job with AI-powered tools.</p>
+          </div>
+
+          <!-- Stat Cards -->
+          <div class="grid-4" style="margin-bottom:32px;">
+            <div class="stat-card">
+              <div class="stat-card-icon">📄</div>
+              <div class="stat-card-info">
+                <div class="stat-card-value">3</div>
+                <div class="stat-card-label">Resumes</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-icon">📋</div>
+              <div class="stat-card-info">
+                <div class="stat-card-value">12</div>
+                <div class="stat-card-label">Applications</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-icon">📅</div>
+              <div class="stat-card-info">
+                <div class="stat-card-value">4</div>
+                <div class="stat-card-label">Interviews</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-icon">✅</div>
+              <div class="stat-card-info">
+                <div class="stat-card-value">8</div>
+                <div class="stat-card-label">Active Submissions</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recommended Jobs -->
+          <div style="margin-bottom:32px;">
+            <div class="flex-between" style="margin-bottom:16px;">
+              <h2 style="font-size:18px;font-weight:600;">🔥 Recommended Jobs</h2>
+              <a href="#" class="btn btn-sm btn-secondary" onclick="navigateTo('jobs')">View All</a>
+            </div>
+            <div class="grid-2">
+              <div class="job-card">
+                <div class="job-card-title">Senior Frontend Developer</div>
+                <div class="job-card-company">TechCorp Inc.</div>
+                <div class="job-card-details">
+                  <span class="job-card-detail">📍 San Francisco, CA</span>
+                  <span class="job-card-detail">💰 $140k - $180k</span>
+                  <span class="job-card-detail">⏰ Full-time</span>
+                </div>
+                <div class="job-card-footer">
+                  <span class="badge badge-primary">Match: 92%</span>
+                  <button class="btn btn-sm btn-primary">Apply Now</button>
+                </div>
+              </div>
+              <div class="job-card">
+                <div class="job-card-title">Full Stack Engineer</div>
+                <div class="job-card-company">StartupX</div>
+                <div class="job-card-details">
+                  <span class="job-card-detail">📍 Remote</span>
+                  <span class="job-card-detail">💰 $120k - $150k</span>
+                  <span class="job-card-detail">⏰ Full-time</span>
+                </div>
+                <div class="job-card-footer">
+                  <span class="badge badge-primary">Match: 87%</span>
+                  <button class="btn btn-sm btn-primary">Apply Now</button>
+                </div>
+              </div>
+              <div class="job-card">
+                <div class="job-card-title">React Native Developer</div>
+                <div class="job-card-company">MobileFirst</div>
+                <div class="job-card-details">
+                  <span class="job-card-detail">📍 New York, NY</span>
+                  <span class="job-card-detail">💰 $130k - $160k</span>
+                  <span class="job-card-detail">⏰ Contract</span>
+                </div>
+                <div class="job-card-footer">
+                  <span class="badge badge-primary">Match: 78%</span>
+                  <button class="btn btn-sm btn-primary">Apply Now</button>
+                </div>
+              </div>
+              <div class="job-card">
+                <div class="job-card-title">DevOps Engineer</div>
+                <div class="job-card-company">CloudScale</div>
+                <div class="job-card-details">
+                  <span class="job-card-detail">📍 Austin, TX</span>
+                  <span class="job-card-detail">💰 $145k - $175k</span>
+                  <span class="job-card-detail">⏰ Full-time</span>
+                </div>
+                <div class="job-card-footer">
+                  <span class="badge badge-primary">Match: 71%</span>
+                  <button class="btn btn-sm btn-secondary">View Details</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Applications -->
+          <div style="margin-bottom:32px;">
+            <div class="flex-between" style="margin-bottom:16px;">
+              <h2 style="font-size:18px;font-weight:600;">📝 Recent Applications</h2>
+              <a href="#" class="btn btn-sm btn-secondary" onclick="navigateTo('applications')">View All</a>
+            </div>
+            <div class="card">
+              <div class="empty-state">
+                <div class="empty-state-icon">📋</div>
+                <div class="empty-state-title">No applications yet</div>
+                <div class="empty-state-text">Start your job search by finding jobs or uploading your resume.</div>
+                <button class="btn btn-primary" onclick="navigateTo('jobs')">Search Jobs</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div>
+            <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;">⚡ Quick Actions</h2>
+            <div class="grid-auto">
+              <div class="card" style="text-align:center;cursor:pointer;" onclick="navigateTo('resume-builder')">
+                <div style="font-size:32px;margin-bottom:12px;">📄</div>
+                <div style="font-size:14px;font-weight:500;">Create Resume</div>
+              </div>
+              <div class="card" style="text-align:center;cursor:pointer;" onclick="navigateTo('resume-templates')">
+                <div style="font-size:32px;margin-bottom:12px;">🎨</div>
+                <div style="font-size:14px;font-weight:500;">Resume Templates</div>
+              </div>
+              <div class="card" style="text-align:center;cursor:pointer;" onclick="navigateTo('jobs')">
+                <div style="font-size:32px;margin-bottom:12px;">🔍</div>
+                <div style="font-size:14px;font-weight:500;">Search Jobs</div>
+              </div>
+              <div class="card" style="text-align:center;cursor:pointer;" onclick="navigateTo('applications')">
+                <div style="font-size:32px;margin-bottom:12px;">📋</div>
+                <div style="font-size:14px;font-weight:500;">Applications</div>
+              </div>
+              <div class="card" style="text-align:center;cursor:pointer;" onclick="navigateTo('interviews')">
+                <div style="font-size:32px;margin-bottom:12px;">📅</div>
+                <div style="font-size:14px;font-weight:500;">Schedule Interview</div>
+              </div>
+              <div class="card" style="text-align:center;cursor:pointer;" onclick="navigateTo('alerts')">
+                <div style="font-size:32px;margin-bottom:12px;">🔔</div>
+                <div style="font-size:14px;font-weight:500;">Job Alerts</div>
+              </div>
+              <div class="card" style="text-align:center;cursor:pointer;" onclick="navigateTo('skill-gap')">
+                <div style="font-size:32px;margin-bottom:12px;">🧠</div>
+                <div style="font-size:14px;font-weight:500;">Skill Gap</div>
+              </div>
+              <div class="card" style="text-align:center;cursor:pointer;" onclick="navigateTo('ats-score')">
+                <div style="font-size:32px;margin-bottom:12px;">🎯</div>
+                <div style="font-size:14px;font-weight:500;">ATS Score</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== RESUME LIST ===== -->
+        <div id="page-resumes" class="page">
+          <div class="page-header">
+            <h1 class="page-title">📄 My Resumes</h1>
+            <p class="page-subtitle">Manage and organize your resumes. Upload new ones or edit existing.</p>
+          </div>
+          <div class="flex-between" style="margin-bottom:20px;">
+            <div></div>
+            <div class="flex gap-12">
+              <button class="btn btn-secondary" onclick="navigateTo('resume-builder')">➕ Create New</button>
+              <button class="btn btn-primary">📤 Upload Resume</button>
+            </div>
+          </div>
+          <div class="grid-3">
+            <div class="card">
+              <div class="card-header">
+                <span class="card-title">Software Engineer Resume</span>
+                <span class="badge badge-success">Primary</span>
+              </div>
+              <div style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">
+                <div>📅 Updated: Jul 15, 2026</div>
+                <div>📊 ATS Score: 86%</div>
+                <div>📄 PDF, DOCX</div>
+              </div>
+              <div class="flex gap-8">
+                <button class="btn btn-sm btn-secondary">✏️ Edit</button>
+                <button class="btn btn-sm btn-secondary">📥 Download</button>
+                <button class="btn btn-sm btn-danger">🗑️</button>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <span class="card-title">Frontend Developer Resume</span>
+                <span class="badge badge-primary">Optimized</span>
+              </div>
+              <div style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">
+                <div>📅 Updated: Jul 10, 2026</div>
+                <div>📊 ATS Score: 91%</div>
+                <div>📄 PDF</div>
+              </div>
+              <div class="flex gap-8">
+                <button class="btn btn-sm btn-secondary">✏️ Edit</button>
+                <button class="btn btn-sm btn-secondary">📥 Download</button>
+                <button class="btn btn-sm btn-danger">🗑️</button>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <span class="card-title">General Resume</span>
+                <span class="badge badge-warning">Draft</span>
+              </div>
+              <div style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">
+                <div>📅 Updated: Jun 28, 2026</div>
+                <div>📊 ATS Score: 62%</div>
+                <div>📄 DOCX</div>
+              </div>
+              <div class="flex gap-8">
+                <button class="btn btn-sm btn-secondary">✏️ Edit</button>
+                <button class="btn btn-sm btn-secondary">📥 Download</button>
+                <button class="btn btn-sm btn-danger">🗑️</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== RESUME BUILDER ===== -->
+        <div id="page-resume-builder" class="page">
+          <div class="page-header">
+            <h1 class="page-title">🎨 Resume Builder</h1>
+            <p class="page-subtitle">Create a standout resume with AI-powered suggestions.</p>
+          </div>
+          <div class="grid-2">
+            <div>
+              <div class="card" style="margin-bottom:20px;">
+                <div class="card-title">Personal Information</div>
+                <form>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label class="form-label">Full Name</label>
+                      <input type="text" class="form-input" placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Professional Title</label>
+                      <input type="text" class="form-input" placeholder="Software Engineer">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" placeholder="john@example.com">
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label class="form-label">Phone</label>
+                      <input type="tel" class="form-input" placeholder="+1 (555) 123-4567">
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Location</label>
+                      <input type="text" class="form-input" placeholder="San Francisco, CA">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">LinkedIn URL</label>
+                    <input type="url" class="form-input" placeholder="https://linkedin.com/in/johndoe">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Professional Summary</label>
+                    <textarea class="form-textarea" placeholder="Write a brief professional summary..." rows="3"></textarea>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <div>
+              <div class="card" style="margin-bottom:20px;">
+                <div class="card-title">Experience &amp; Education</div>
+                <form>
+                  <div class="form-group">
+                    <label class="form-label">Work Experience</label>
+                    <textarea class="form-textarea" placeholder="Add your work experience..." rows="4"></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Education</label>
+                    <textarea class="form-textarea" placeholder="Add your education..." rows="3"></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Skills</label>
+                    <textarea class="form-textarea" placeholder="JavaScript, Python, React, Node.js..." rows="2"></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Certifications</label>
+                    <textarea class="form-textarea" placeholder="List your certifications..." rows="2"></textarea>
+                  </div>
+                  <button class="btn btn-primary btn-block">💾 Save Resume</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== RESUME TEMPLATES ===== -->
+        <div id="page-resume-templates" class="page">
+          <div class="page-header">
+            <h1 class="page-title">📋 Resume Templates</h1>
+            <p class="page-subtitle">Choose from professionally designed, ATS-friendly templates.</p>
+          </div>
+          <div class="grid-auto">
+            <div class="template-card">
+              <div class="template-card-preview">📄</div>
+              <div class="template-card-title">Modern Professional</div>
+              <div class="template-card-sub">Clean, minimal design</div>
+              <button class="btn btn-sm btn-primary" style="margin-top:12px;">Use Template</button>
+            </div>
+            <div class="template-card">
+              <div class="template-card-preview">📄</div>
+              <div class="template-card-title">Creative</div>
+              <div class="template-card-sub">Bold and distinctive</div>
+              <button class="btn btn-sm btn-primary" style="margin-top:12px;">Use Template</button>
+            </div>
+            <div class="template-card">
+              <div class="template-card-preview">📄</div>
+              <div class="template-card-title">Executive</div>
+              <div class="template-card-sub">For senior positions</div>
+              <button class="btn btn-sm btn-primary" style="margin-top:12px;">Use Template</button>
+            </div>
+            <div class="template-card">
+              <div class="template-card-preview">📄</div>
+              <div class="template-card-title">Technical</div>
+              <div class="template-card-sub">Optimized for tech roles</div>
+              <button class="btn btn-sm btn-primary" style="margin-top:12px;">Use Template</button>
+            </div>
+            <div class="template-card">
+              <div class="template-card-preview">📄</div>
+              <div class="template-card-title">Minimalist</div>
+              <div class="template-card-sub">Simple and elegant</div>
+              <button class="btn btn-sm btn-primary" style="margin-top:12px;">Use Template</button>
+            </div>
+            <div class="template-card">
+              <div class="template-card-preview">📄</div>
+              <div class="template-card-title">ATS Optimized</div>
+              <div class="template-card-sub">Best for automated screening</div>
+              <button class="btn btn-sm btn-primary" style="margin-top:12px;">Use Template</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== ATS SCORE ===== -->
+        <div id="page-ats-score" class="page">
+          <div class="page-header">
+            <h1 class="page-title">🎯 ATS Score</h1>
+            <p class="page-subtitle">Analyze your resume against job descriptions to see how ATS-friendly it is.</p>
+          </div>
+          <div class="grid-2">
+            <div>
+              <div class="card">
+                <div class="card-title">Resume Analysis</div>
+                <form>
+                  <div class="form-group">
+                    <label class="form-label">Select Resume</label>
+                    <select class="form-select">
+                      <option>Software Engineer Resume</option>
+                      <option>Frontend Developer Resume</option>
+                      <option>General Resume</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Job Description URL</label>
+                    <input type="url" class="form-input" placeholder="https://company.com/jobs/...">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Or paste job description</label>
+                    <textarea class="form-textarea" placeholder="Paste the full job description here..." rows="6"></textarea>
+                  </div>
+                  <button class="btn btn-primary btn-block">🔍 Analyze Resume</button>
+                </form>
+              </div>
+            </div>
+            <div>
+              <div class="card">
+                <div class="card-title">ATS Score Results</div>
+                <div class="empty-state">
+                  <div class="empty-state-icon">🎯</div>
+                  <div class="empty-state-title">No analysis yet</div>
+                  <div class="empty-state-text">Submit a resume and job description to see your ATS compatibility score.</div>
+                </div>
+                <!-- Results placeholder (hidden initially) -->
+                <div id="ats-results" style="display:none;">
+                  <div class="flex-between" style="margin-bottom:16px;">
+                    <span style="font-size:13px;color:var(--text-secondary);">Overall ATS Score</span>
+                    <span style="font-size:24px;font-weight:700;color:var(--success);">86%</span>
+                  </div>
+                  <div class="progress-bar" style="margin-bottom:20px;">
+                    <div class="progress-bar-fill" style="width:86%;"></div>
+                  </div>
+                  <div style="font-size:14px;font-weight:500;margin-bottom:12px;">Breakdown</div>
+                  <div style="font-size:13px;color:var(--text-secondary);">
+                    <div class="flex-between" style="margin-bottom:8px;"><span>✅ Keyword Match</span><span>92%</span></div>
+                    <div class="flex-between" style="margin-bottom:8px;"><span>✅ Formatting</span><span>85%</span></div>
+                    <div class="flex-between" style="margin-bottom:8px;"><span>✅ Section Headers</span><span>90%</span></div>
+                    <div class="flex-between" style="margin-bottom:8px;"><span>⚠️ Bullet Points</span><span>70%</span></div>
+                    <div class="flex-between" style="margin-bottom:8px;"><span>✅ Contact Info</span><span>100%</span></div>
+                  </div>
+                  <button class="btn btn-secondary btn-block" style="margin-top:16px;">📄 View Detailed Report</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== SKILL GAP ===== -->
+        <div id="page-skill-gap" class="page">
+          <div class="page-header">
+            <h1 class="page-title">🧠 Skill Gap Analysis</h1>
+            <p class="page-subtitle">Identify missing skills and get recommendations to boost your employability.</p>
+          </div>
+          <div class="grid-2">
+            <div>
+              <div class="card">
+                <div class="card-title">Analyze Your Skills</div>
+                <form>
+                  <div class="form-group">
+                    <label class="form-label">Current Role / Target Job Title</label>
+                    <input type="text" class="form-input" placeholder="e.g. Senior Frontend Developer">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Your Current Skills (comma separated)</label>
+                    <textarea class="form-textarea" placeholder="JavaScript, React, CSS, HTML, TypeScript..." rows="3"></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Target Company (optional)</label>
+                    <input type="text" class="form-input" placeholder="e.g. Google, Microsoft">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Industry</label>
+                    <select class="form-select">
+                      <option>Technology</option>
+                      <option>Finance</option>
+                      <option>Healthcare</option>
+                      <option>Education</option>
+                      <option>E-commerce</option>
+                    </select>
+                  </div>
+                  <button class="btn btn-primary btn-block">🧠 Analyze Skills</button>
+                </form>
+              </div>
+            </div>
+            <div>
+              <div class="card" style="margin-bottom:16px;">
+                <div class="card-title">Skill Gap Results</div>
+                <div class="empty-state">
+                  <div class="empty-state-icon">🧠</div>
+                  <div class="empty-state-title">No analysis yet</div>
+                  <div class="empty-state-text">Enter your skills and target role to see where you need improvement.</div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-title">📚 Recommended Learning</div>
+                <div class="empty-state">
+                  <div class="empty-state-icon">📚</div>
+                  <div class="empty-state-title">No recommendations yet</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== JOB SEARCH ===== -->
+        <div id="page-jobs" class="page">
+          <div class="page-header">
+            <h1 class="page-title">🔍 Job Search</h1>
+            <p class="page-subtitle">Find your next opportunity with AI-powered job matching.</p>
+          </div>
+          <div class="card" style="margin-bottom:24px;">
+            <div class="flex gap-12" style="flex-wrap:wrap;">
+              <div style="flex:2;min-width:200px;">
+                <input type="text" class="form-input" placeholder="Job title, keyword, or company...">
+              </div>
+              <div style="flex:1;min-width:150px;">
+                <input type="text" class="form-input" placeholder="Location">
+              </div>
+              <div style="flex:1;min-width:130px;">
+                <select class="form-select">
+                  <option>All Types</option>
+                  <option>Full-time</option>
+                  <option>Part-time</option>
+                  <option>Contract</option>
+                  <option>Remote</option>
+                </select>
+              </div>
+              <div>
+                <button class="btn btn-primary">🔍 Search</button>
+              </div>
+            </div>
+          </div>
+          <div class="flex-between" style="margin-bottom:16px;">
+            <span style="font-size:14px;color:var(--text-secondary);">Showing 24 of 1,203 jobs</span>
+            <div class="flex gap-8">
+              <select class="form-select" style="width:auto;">
+                <option>Most Relevant</option>
+                <option>Newest</option>
+                <option>Salary: High to Low</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="job-card">
+              <div class="job-card-title">Senior Frontend Developer</div>
+              <div class="job-card-company">TechCorp Inc. <span class="tag tag-success">New</span></div>
+              <div class="job-card-details">
+                <span class="job-card-detail">📍 San Francisco, CA</span>
+                <span class="job-card-detail">💰 $140k - $180k</span>
+                <span class="job-card-detail">⏰ Full-time</span>
+              </div>
+              <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">
+                Skills: React, TypeScript, CSS, GraphQL, Jest
+              </div>
+              <div class="job-card-footer">
+                <span class="badge badge-primary">Match: 92%</span>
+                <div class="flex gap-8">
+                  <button class="btn btn-sm btn-secondary" onclick="navigateTo('job-details')">Details</button>
+                  <button class="btn btn-sm btn-primary">Apply</button>
+                </div>
+              </div>
+            </div>
+            <div class="job-card">
+              <div class="job-card-title">Full Stack Engineer</div>
+              <div class="job-card-company">StartupX <span class="tag tag-primary">Featured</span></div>
+              <div class="job-card-details">
+                <span class="job-card-detail">📍 Remote</span>
+                <span class="job-card-detail">💰 $120k - $150k</span>
+                <span class="job-card-detail">⏰ Full-time</span>
+              </div>
+              <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">
+                Skills: Node.js, React, Python, AWS, Docker
+              </div>
+              <div class="job-card-footer">
+                <span class="badge badge-primary">Match: 87%</span>
+                <div class="flex gap-8">
+                  <button class="btn btn-sm btn-secondary" onclick="navigateTo('job-details')">Details</button>
+                  <button class="btn btn-sm btn-primary">Apply</button>
+                </div>
+              </div>
+            </div>
+            <div class="job-card">
+              <div class="job-card-title">React Native Developer</div>
+              <div class="job-card-company">MobileFirst</div>
+              <div class="job-card-details">
+                <span class="job-card-detail">📍 New York, NY</span>
+                <span class="job-card-detail">💰 $130k - $160k</span>
+                <span class="job-card-detail">⏰ Contract</span>
+              </div>
+              <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">
+                Skills: React Native, TypeScript, Redux, Firebase
+              </div>
+              <div class="job-card-footer">
+                <span class="badge badge-primary">Match: 78%</span>
+                <div class="flex gap-8">
+                  <button class="btn btn-sm btn-secondary" onclick="navigateTo('job-details')">Details</button>
+                  <button class="btn btn-sm btn-primary">Apply</button>
+                </div>
+              </div>
+            </div>
+            <div class="job-card">
+              <div class="job-card-title">DevOps Engineer</div>
+              <div class="job-card-company">CloudScale</div>
+              <div class="job-card-details">
+                <span class="job-card-detail">📍 Austin, TX</span>
+                <span class="job-card-detail">💰 $145k - $175k</span>
+                <span class="job-card-detail">⏰ Full-time</span>
+              </div>
+              <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">
+                Skills: AWS, Kubernetes, Terraform, CI/CD, Docker
+              </div>
+              <div class="job-card-footer">
+                <span class="badge badge-primary">Match: 71%</span>
+                <div class="flex gap-8">
+                  <button class="btn btn-sm btn-secondary" onclick="navigateTo('job-details')">Details</button>
+                  <button class="btn btn-sm btn-secondary">Save</button>
+                </div>
+              </div>
+            </div>
+            <div class="job-card">
+              <div class="job-card-title">Backend Developer</div>
+              <div class="job-card-company">DataSystems</div>
+              <div class="job-card-details">
+                <span class="job-card-detail">📍 Chicago, IL</span>
+                <span class="job-card-detail">💰 $125k - $155k</span>
+                <span class="job-card-detail">⏰ Full-time</span>
+              </div>
+              <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">
+                Skills: Python, Django, PostgreSQL, Redis, Docker
+              </div>
+              <div class="job-card-footer">
+                <span class="badge badge-primary">Match: 83%</span>
+                <div class="flex gap-8">
+                  <button class="btn btn-sm btn-secondary" onclick="navigateTo('job-details')">Details</button>
+                  <button class="btn btn-sm btn-primary">Apply</button>
+                </div>
+              </div>
+            </div>
+            <div class="job-card">
+              <div class="job-card-title">AI/ML Engineer</div>
+              <div class="job-card-company">NeuralLabs</div>
+              <div class="job-card-details">
+                <span class="job-card-detail">📍 San Jose, CA</span>
+                <span class="job-card-detail">💰 $160k - $210k</span>
+                <span class="job-card-detail">⏰ Full-time</span>
+              </div>
+              <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">
+                Skills: Python, TensorFlow, PyTorch, NLP, Computer Vision
+              </div>
+              <div class="job-card-footer">
+                <span class="badge badge-primary">Match: 65%</span>
+                <div class="flex gap-8">
+                  <button class="btn btn-sm btn-secondary" onclick="navigateTo('job-details')">Details</button>
+                  <button class="btn btn-sm btn-secondary">Save</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="flex-center" style="margin-top:24px;">
+            <button class="btn btn-secondary">Load More Jobs</button>
+          </div>
+        </div>
+
+        <!-- ===== JOB DETAILS ===== -->
+        <div id="page-job-details" class="page">
+          <div class="page-header">
+            <h1 class="page-title">🔍 Job Details</h1>
+            <p class="page-subtitle">Detailed view of the selected job posting.</p>
+          </div>
+          <button class="btn btn-sm btn-secondary" style="margin-bottom:20px;" onclick="navigateTo('jobs')">← Back to Jobs</button>
+          <div class="card" style="margin-bottom:24px;">
+            <div class="flex-between" style="margin-bottom:16px;">
+              <div>
+                <h2 style="font-size:20px;font-weight:600;margin-bottom:4px;">Senior Frontend Developer</h2>
+                <p style="font-size:14px;color:var(--text-secondary);">TechCorp Inc. · San Francisco, CA (Remote Hybrid)</p>
+              </div>
+              <span class="badge badge-success">$140k - $180k</span>
+            </div>
+            <div class="flex gap-8" style="margin-bottom:16px;flex-wrap:wrap;">
+              <span class="badge badge-primary">Full-time</span>
+              <span class="badge badge-info">2+ years exp.</span>
+              <span class="badge badge-warning">Urgent</span>
+              <span class="badge badge-success">Match: 92%</span>
+            </div>
+            <div class="divider"></div>
+            <div style="font-size:14px;color:var(--text-secondary);">
+              <h3 style="font-size:15px;font-weight:600;color:var(--text-primary);margin-bottom:8px;">Job Description</h3>
+              <p style="margin-bottom:16px;">We are looking for a Senior Frontend Developer to join our growing team. You will be responsible for building and maintaining our customer-facing web applications using modern frameworks and best practices.</p>
+              <h3 style="font-size:15px;font-weight:600;color:var(--text-primary);margin-bottom:8px;">Requirements</h3>
+              <ul style="padding-left:20px;margin-bottom:16px;line-height:2;">
+                <li>5+ years of experience in frontend development</li>
+                <li>Strong proficiency in React, TypeScript, and CSS</li>
+                <li>Experience with GraphQL and REST APIs</li>
+                <li>Understanding of testing frameworks (Jest, Cypress)</li>
+                <li>Excellent problem-solving and communication skills</li>
+              </ul>
+              <h3 style="font-size:15px;font-weight:600;color:var(--text-primary);margin-bottom:8px;">Benefits</h3>
+              <ul style="padding-left:20px;line-height:2;">
+                <li>Competitive salary and equity package</li>
+                <li>Health, dental, and vision insurance</li>
+                <li>Flexible PTO policy</li>
+                <li>Remote-friendly culture</li>
+                <li>Annual learning budget</li>
+              </ul>
+            </div>
+            <div class="divider"></div>
+            <div class="flex gap-12">
+              <button class="btn btn-primary">📝 Apply Now</button>
+              <button class="btn btn-secondary">💾 Save Job</button>
+              <button class="btn btn-secondary">🔗 Share</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== APPLICATIONS ===== -->
+        <div id="page-applications" class="page">
+          <div class="page-header">
+            <h1 class="page-title">📋 Applications</h1>
+            <p class="page-subtitle">Track all your job applications in one place.</p>
+          </div>
+          <div class="flex-between" style="margin-bottom:20px;">
+            <div class="flex gap-8">
+              <select class="form-select" style="width:auto;">
+                <option>All Status</option>
+                <option>Saved</option>
+                <option>Applied</option>
+                <option>Interviewing</option>
+                <option>Offer</option>
+                <option>Rejected</option>
+              </select>
+              <select class="form-select" style="width:auto;">
+                <option>All Jobs</option>
+                <option>This Month</option>
+                <option>Last Month</option>
+              </select>
+            </div>
+            <button class="btn btn-primary">➕ Add Application</button>
+          </div>
+          <!-- Pipeline View -->
+          <div class="pipeline" style="margin-bottom:24px;">
+            <div class="pipeline-column">
+              <div class="pipeline-column-title">📌 Saved</div>
+              <div class="pipeline-item">
+                <div class="pipeline-item-title">Senior Frontend Developer</div>
+                <div class="pipeline-item-sub">TechCorp Inc.</div>
+              </div>
+              <div class="pipeline-item">
+                <div class="pipeline-item-title">Full Stack Engineer</div>
+                <div class="pipeline-item-sub">StartupX</div>
+              </div>
+            </div>
+            <div class="pipeline-column">
+              <div class="pipeline-column-title">📤 Applied</div>
+              <div class="pipeline-item">
+                <div class="pipeline-item-title">React Native Developer</div>
+                <div class="pipeline-item-sub">MobileFirst · Jul 14</div>
+              </div>
+              <div class="pipeline-item">
+                <div class="pipeline-item-title">Backend Developer</div>
+                <div class="pipeline-item-sub">DataSystems · Jul 12</div>
+              </div>
+              <div class="pipeline-item">
+                <div class="pipeline-item-title">DevOps Engineer</div>
+                <div class="pipeline-item-sub">CloudScale · Jul 10</div>
+              </div>
+            </div>
+            <div class="pipeline-column">
+              <div class="pipeline-column-title">📅 Interviewing</div>
+              <div class="pipeline-item">
+                <div class="pipeline-item-title">AI/ML Engineer</div>
+                <div class="pipeline-item-sub">NeuralLabs · Jul 20</div>
+              </div>
+            </div>
+            <div class="pipeline-column">
+              <div class="pipeline-column-title">🎉 Offer</div>
+              <div class="pipeline-item">
+                <div class="pipeline-item-title">Junior Developer</div>
+                <div class="pipeline-item-sub">WebAgency · $85k</div>
+              </div>
+            </div>
+            <div class="pipeline-column">
+              <div class="pipeline-column-title">❌ Rejected</div>
+              <div class="pipeline-item">
+                <div class="pipeline-item-title">Product Manager</div>
+                <div class="pipeline-item-sub">BigCo · Jul 8</div>
+              </div>
+            </div>
+          </div>
+          <!-- Table View -->
+          <div class="card">
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Job Title</th>
+                    <th>Company</th>
+                    <th>Applied</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Senior Frontend Developer</td>
+                    <td>TechCorp Inc.</td>
+                    <td>Jul 15, 2026</td>
+                    <td><span class="badge badge-warning">Saved</span></td>
+                    <td><button class="btn btn-sm btn-secondary">View</button></td>
+                  </tr>
+                  <tr>
+                    <td>React Native Developer</td>
+                    <td>MobileFirst</td>
+                    <td>Jul 14, 2026</td>
+                    <td><span class="badge badge-info">Applied</span></td>
+                    <td><button class="btn btn-sm btn-secondary">View</button></td>
+                  </tr>
+                  <tr>
+                    <td>AI/ML Engineer</td>
+                    <td>NeuralLabs</td>
+                    <td>Jul 10, 2026</td>
+                    <td><span class="badge badge-primary">Interviewing</span></td>
+                    <td><button class="btn btn-sm btn-secondary">View</button></td>
+                  </tr>
+                  <tr>
+                    <td>Junior Developer</td>
+                    <td>WebAgency</td>
+                    <td>Jul 5, 2026</td>
+                    <td><span class="badge badge-success">Offer</span></td>
+                    <td><button class="btn btn-sm btn-secondary">View</button></td>
+                  </tr>
+                  <tr>
+                    <td>Product Manager</td>
+                    <td>BigCo</td>
+                    <td>Jun 28, 2026</td>
+                    <td><span class="badge badge-danger">Rejected</span></td>
+                    <td><button class="btn btn-sm btn-secondary">View</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== INTERVIEWS ===== -->
+        <div id="page-interviews" class="page">
+          <div class="page-header">
+            <h1 class="page-title">📅 Interviews</h1>
+            <p class="page-subtitle">Schedule, manage, and prepare for upcoming interviews.</p>
+          </div>
+          <div class="grid-2" style="margin-bottom:24px;">
+            <div class="card">
+              <div class="card-title">Upcoming Interviews</div>
+              <div class="timeline">
+                <div class="timeline-item">
+                  <div class="timeline-item-title">Technical Screen - AI/ML Engineer</div>
+                  <div class="timeline-item-subtitle">NeuralLabs · Video Call</div>
+                  <div class="timeline-item-date">📅 Jul 20, 2026 at 2:00 PM</div>
+                </div>
+                <div class="timeline-item pending">
+                  <div class="timeline-item-title">On-site Interview - Full Stack</div>
+                  <div class="timeline-item-subtitle">StartupX · Office Visit</div>
+                  <div class="timeline-item-date">📅 Jul 25, 2026 at 10:00 AM</div>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">Schedule New Interview</div>
+              <form>
+                <div class="form-group">
+                  <label class="form-label">Company</label>
+                  <input type="text" class="form-input" placeholder="Company name">
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Date</label>
+                    <input type="date" class="form-input">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Time</label>
+                    <input type="time" class="form-input">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Type</label>
+                  <select class="form-select">
+                    <option>Phone Screen</option>
+                    <option>Video Call</option>
+                    <option>Technical Interview</option>
+                    <option>On-site</option>
+                    <option>Take-home Assignment</option>
+                  </select>
+                </div>
+                <button class="btn btn-primary btn-block">📅 Add to Calendar</button>
+              </form>
+            </div>
+          </div>
+          <!-- Calendar -->
+          <div class="card">
+            <div class="flex-between" style="margin-bottom:16px;">
+              <div class="card-title">📆 July 2026</div>
+              <div class="flex gap-8">
+                <button class="btn btn-sm btn-secondary">◀ Prev</button>
+                <button class="btn btn-sm btn-secondary">Next ▶</button>
+              </div>
+            </div>
+            <div class="calendar-grid">
+              <div class="calendar-header">Sun</div>
+              <div class="calendar-header">Mon</div>
+              <div class="calendar-header">Tue</div>
+              <div class="calendar-header">Wed</div>
+              <div class="calendar-header">Thu</div>
+              <div class="calendar-header">Fri</div>
+              <div class="calendar-header">Sat</div>
+              <div class="calendar-day other-month">29</div>
+              <div class="calendar-day other-month">30</div>
+              <div class="calendar-day">1</div>
+              <div class="calendar-day">2</div>
+              <div class="calendar-day">3</div>
+              <div class="calendar-day">4</div>
+              <div class="calendar-day">5</div>
+              <div class="calendar-day">6</div>
+              <div class="calendar-day">7</div>
+              <div class="calendar-day">8</div>
+              <div class="calendar-day">9</div>
+              <div class="calendar-day">10</div>
+              <div class="calendar-day">11</div>
+              <div class="calendar-day">12</div>
+              <div class="calendar-day">13</div>
+              <div class="calendar-day">14</div>
+              <div class="calendar-day">15</div>
+              <div class="calendar-day">16</div>
+              <div class="calendar-day">17</div>
+              <div class="calendar-day">18</div>
+              <div class="calendar-day">19</div>
+              <div class="calendar-day has-event">20</div>
+              <div class="calendar-day">21</div>
+              <div class="calendar-day">22</div>
+              <div class="calendar-day">23</div>
+              <div class="calendar-day">24</div>
+              <div class="calendar-day has-event">25</div>
+              <div class="calendar-day">26</div>
+              <div class="calendar-day">27</div>
+              <div class="calendar-day">28</div>
+              <div class="calendar-day">29</div>
+              <div class="calendar-day">30</div>
+              <div class="calendar-day">31</div>
+              <div class="calendar-day other-month">1</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== AUTO-APPLY ===== -->
+        <div id="page-auto-apply" class="page">
+          <div class="page-header">
+            <h1 class="page-title">⚡ Auto-Apply</h1>
+            <p class="page-subtitle">Automate your job applications with AI-powered matching and submission.</p>
+          </div>
+          <!-- Wizard Steps -->
+          <div class="wizard-steps">
+            <div class="wizard-step active">1️⃣ Configure</div>
+            <div class="wizard-step">2️⃣ Review</div>
+            <div class="wizard-step">3️⃣ Confirm</div>
+            <div class="wizard-step">4️⃣ Results</div>
+          </div>
+          <div class="grid-2">
+            <div>
+              <div class="card">
+                <div class="card-title">Auto-Apply Configuration</div>
+                <form>
+                  <div class="form-group">
+                    <label class="form-label">Target Job Title</label>
+                    <input type="text" class="form-input" placeholder="e.g. Frontend Developer">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Preferred Locations</label>
+                    <input type="text" class="form-input" placeholder="San Francisco, Remote, New York">
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label class="form-label">Min Salary</label>
+                      <input type="number" class="form-input" placeholder="$100,000">
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Max Applications/Day</label>
+                      <input type="number" class="form-input" placeholder="10">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Select Resume</label>
+                    <select class="form-select">
+                      <option>Software Engineer Resume (ATS: 86%)</option>
+                      <option>Frontend Developer Resume (ATS: 91%)</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Cover Letter (optional)</label>
+                    <select class="form-select">
+                      <option>Generate AI Cover Letter</option>
+                      <option>Use existing</option>
+                      <option>None</option>
+                    </select>
+                  </div>
+                  <div class="form-check" style="margin-bottom:12px;">
+                    <input type="checkbox" id="auto-followup" checked>
+                    <label for="auto-followup">Auto send follow-up emails after 5 days</label>
+                  </div>
+                  <button class="btn btn-primary btn-block">⚡ Start Auto-Apply</button>
+                </form>
+              </div>
+            </div>
+            <div>
+              <div class="card" style="margin-bottom:16px;">
+                <div class="card-title">📊 Auto-Apply Stats</div>
+                <div class="grid-2" style="margin-bottom:16px;">
+                  <div style="text-align:center;padding:12px;background:var(--bg-card);border-radius:var(--radius-sm);">
+                    <div style="font-size:24px;font-weight:700;">24</div>
+                    <div style="font-size:12px;color:var(--text-muted);">Today's Limit</div>
+                  </div>
+                  <div style="text-align:center;padding:12px;background:var(--bg-card);border-radius:var(--radius-sm);">
+                    <div style="font-size:24px;font-weight:700;">156</div>
+                    <div style="font-size:12px;color:var(--text-muted);">Total Applied</div>
+                  </div>
+                </div>
+                <div class="progress-bar" style="margin-bottom:8px;">
+                  <div class="progress-bar-fill" style="width:45%;"></div>
+                </div>
+                <div class="flex-between" style="font-size:12px;color:var(--text-secondary);">
+                  <span>45% of daily goal</span>
+                  <span>10 applied today</span>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-title">Recent Auto-Applications</div>
+                <div style="font-size:13px;color:var(--text-secondary);">
+                  <div class="flex-between" style="padding:8px 0;border-bottom:1px solid var(--border-color);">
+                    <span>Frontend Developer at WebCo</span>
+                    <span class="badge badge-success">Applied</span>
+                  </div>
+                  <div class="flex-between" style="padding:8px 0;border-bottom:1px solid var(--border-color);">
+                    <span>React Dev at AppStudio</span>
+                    <span class="badge badge-success">Applied</span>
+                  </div>
+                  <div class="flex-between" style="padding:8px 0;border-bottom:1px solid var(--border-color);">
+                    <span>UI Engineer at DesignLab</span>
+                    <span class="badge badge-warning">Pending</span>
+                  </div>
+                  <div class="flex-between" style="padding:8px 0;">
+                    <span>Full Stack at TechStartup</span>
+                    <span class="badge badge-danger">Skipped</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== COVER LETTERS ===== -->
+        <div id="page-cover-letters" class="page">
+          <div class="page-header">
+            <h1 class="page-title">✉️ Cover Letters</h1>
+            <p class="page-subtitle">Generate tailored cover letters with AI in seconds.</p>
+          </div>
+          <div class="grid-2">
+            <div>
+              <div class="card">
+                <div class="card-title">Generate Cover Letter</div>
+                <form>
+                  <div class="form-group">
+                    <label class="form-label">Job Title</label>
+                    <input type="text" class="form-input" placeholder="e.g. Senior Frontend Developer">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Company Name</label>
+                    <input type="text" class="form-input" placeholder="e.g. TechCorp Inc.">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Hiring Manager Name (optional)</label>
+                    <input type="text" class="form-input" placeholder="e.g. Jane Smith">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Key Skills to Highlight</label>
+                    <input type="text" class="form-input" placeholder="React, TypeScript, Leadership">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Tone</label>
+                    <select class="form-select">
+                      <option>Professional</option>
+                      <option>Enthusiastic</option>
+                      <option>Formal</option>
+                      <option>Casual</option>
+                    </select>
+                  </div>
+                  <button class="btn btn-primary btn-block">✉️ Generate Cover Letter</button>
+                </form>
+              </div>
+            </div>
+            <div>
+              <div class="card" style="margin-bottom:16px;">
+                <div class="card-title">Generated Cover Letter</div>
+                <div class="empty-state">
+                  <div class="empty-state-icon">✉️</div>
+                  <div class="empty-state-title">No cover letter generated yet</div>
+                  <div class="empty-state-text">Fill in the details and generate your personalized cover letter.</div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-title">Saved Cover Letters</div>
+                <div class="empty-state">
+                  <div class="empty-state-icon">📁</div>
+                  <div class="empty-state-title">No saved cover letters</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== JOB ALERTS ===== -->
+        <div id="page-alerts" class="page">
+          <div class="page-header">
+            <h1 class="page-title">🔔 Job Alerts</h1>
+            <p class="page-subtitle">Get notified when new jobs matching your preferences are posted.</p>
+          </div>
+          <div class="flex-between" style="margin-bottom:20px;">
+            <span style="font-size:14px;color:var(--text-secondary);">3 active alerts</span>
+            <button class="btn btn-primary">➕ Create Alert</button>
+          </div>
+          <div class="grid-2">
+            <div class="card">
+              <div class="flex-between" style="margin-bottom:12px;">
+                <div>
+                  <div class="card-title" style="margin-bottom:4px;">Frontend Developer Jobs</div>
+                  <div style="font-size:12px;color:var(--text-muted);">San Francisco · Full-time · $120k+</div>
+                </div>
+                <span class="badge badge-success">Active</span>
+              </div>
+              <div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">
+                📊 12 new jobs this week
+              </div>
+              <div class="flex gap-8">
+                <button class="btn btn-sm btn-secondary">✏️ Edit</button>
+                <button class="btn btn-sm btn-danger">Pause</button>
+                <button class="btn btn-sm btn-danger">🗑️</button>
+              </div>
+            </div>
+            <div class="card">
+              <div class="flex-between" style="margin-bottom:12px;">
+                <div>
+                  <div class="card-title" style="margin-bottom:4px;">React Native Developer</div>
+                  <div style="font-size:12px;color:var(--text-muted);">Remote · Contract · $100k+</div>
+                </div>
+                <span class="badge badge-success">Active</span>
+              </div>
+              <div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">
+                📊 5 new jobs this week
+              </div>
+              <div class="flex gap-8">
+                <button class="btn btn-sm btn-secondary">✏️ Edit</button>
+                <button class="btn btn-sm btn-danger">Pause</button>
+                <button class="btn btn-sm btn-danger">🗑️</button>
+              </div>
+            </div>
+            <div class="card">
+              <div class="flex-between" style="margin-bottom:12px;">
+                <div>
+                  <div class="card-title" style="margin-bottom:4px;">DevOps Engineer</div>
+                  <div style="font-size:12px;color:var(--text-muted);">Austin · Full-time</div>
+                </div>
+                <span class="badge badge-warning">Paused</span>
+              </div>
+              <div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">
+                📊 8 new jobs this week
+              </div>
+              <div class="flex gap-8">
+                <button class="btn btn-sm btn-secondary">✏️ Edit</button>
+                <button class="btn btn-sm btn-success">Resume</button>
+                <button class="btn btn-sm btn-danger">🗑️</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== EMAIL GENERATOR ===== -->
+        <div id="page-email-generator" class="page">
+          <div class="page-header">
+            <h1 class="page-title">📧 Email Generator</h1>
+            <p class="page-subtitle">Generate professional emails for follow-ups, networking, and more.</p>
+          </div>
+          <div class="grid-2">
+            <div>
+              <div class="card">
+                <div class="card-title">Email Details</div>
+                <form>
+                  <div class="form-group">
+                    <label class="form-label">Email Type</label>
+                    <select class="form-select">
+                      <option>Application Follow-up</option>
+                      <option>Networking Outreach</option>
+                      <option>Interview Thank You</option>
+                      <option>Job Acceptance</option>
+                      <option>Job Decline</option>
+                      <option>Referral Request</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Recipient Name</label>
+                    <input type="text" class="form-input" placeholder="e.g. Hiring Manager">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Company Name</label>
+                    <input type="text" class="form-input" placeholder="e.g. TechCorp Inc.">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Your Name</label>
+                    <input type="text" class="form-input" placeholder="Your full name">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Additional Context</label>
+                    <textarea class="form-textarea" placeholder="Any specific details to include..." rows="3"></textarea>
+                  </div>
+                  <button class="btn btn-primary btn-block">📧 Generate Email</button>
+                </form>
+              </div>
+            </div>
+            <div>
+              <div class="card">
+                <div class="card-title">Generated Email</div>
+                <div class="empty-state">
+                  <div class="empty-state-icon">📧</div>
+                  <div class="empty-state-title">No email generated yet</div>
+                  <div class="empty-state-text">Fill in the details and generate your professional email.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== DOWNLOADS ===== -->
+        <div id="page-downloads" class="page">
+          <div class="page-header">
+            <h1 class="page-title">📥 Downloads</h1>
+            <p class="page-subtitle">Access and download all your generated documents and reports.</p>
+          </div>
+          <div class="grid-2" style="margin-bottom:24px;">
+            <div class="stat-card">
+              <div class="stat-card-icon">📄</div>
+              <div class="stat-card-info">
+                <div class="stat-card-value">5</div>
+                <div class="stat-card-label">Resumes</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-icon">✉️</div>
+              <div class="stat-card-info">
+                <div class="stat-card-value">8</div>
+                <div class="stat-card-label">Cover Letters</div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>File Name</th>
+                    <th>Type</th>
+                    <th>Date</th>
+                    <th>Size</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Software_Engineer_Resume.pdf</td>
+                    <td><span class="badge badge-primary">Resume</span></td>
+                    <td>Jul 15, 2026</td>
+                    <td>245 KB</td>
+                    <td><button class="btn btn-sm btn-primary">📥 Download</button></td>
+                  </tr>
+                  <tr>
+                    <td>Frontend_Developer_Resume.docx</td>
+                    <td><span class="badge badge-primary">Resume</span></td>
+                    <td>Jul 10, 2026</td>
+                    <td>180 KB</td>
+                    <td><button class="btn btn-sm btn-primary">📥 Download</button></td>
+                  </tr>
+                  <tr>
+                    <td>Cover_Letter_TechCorp.pdf</td>
+                    <td><span class="badge badge-info">Cover Letter</span></td>
+                    <td>Jul 12, 2026</td>
+                    <td>95 KB</td>
+                    <td><button class="btn btn-sm btn-primary">📥 Download</button></td>
+                  </tr>
+                  <tr>
+                    <td>ATS_Report_Jul2026.pdf</td>
+                    <td><span class="badge badge-warning">Report</span></td>
+                    <td>Jul 8, 2026</td>
+                    <td>320 KB</td>
+                    <td><button class="btn btn-sm btn-primary">📥 Download</button></td>
+                  </tr>
+                  <tr>
+                    <td>Skill_Gap_Analysis.pdf</td>
+                    <td><span class="badge badge-warning">Report</span></td>
+                    <td>Jul 5, 2026</td>
+                    <td>210 KB</td>
+                    <td><button class="btn btn-sm btn-primary">📥 Download</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== PROFILE ===== -->
+        <div id="page-profile" class="page">
+          <div class="page-header">
+            <h1 class="page-title">👤 Profile</h1>
+            <p class="page-subtitle">Manage your personal information and account settings.</p>
+          </div>
+          <div class="grid-2">
+            <div>
+              <div class="card">
+                <div class="card-title">Personal Information</div>
+                <form>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label class="form-label">First Name</label>
+                      <input type="text" class="form-input" placeholder="John">
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Last Name</label>
+                      <input type="text" class="form-input" placeholder="Doe">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" placeholder="john@example.com">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Phone</label>
+                    <input type="tel" class="form-input" placeholder="+1 (555) 123-4567">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Location</label>
+                    <input type="text" class="form-input" placeholder="San Francisco, CA">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">LinkedIn Profile</label>
+                    <input type="url" class="form-input" placeholder="https://linkedin.com/in/johndoe">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">GitHub Profile</label>
+                    <input type="url" class="form-input" placeholder="https://github.com/johndoe">
+                  </div>
+                  <button class="btn btn-primary btn-block">💾 Save Changes</button>
+                </form>
+              </div>
+            </div>
+            <div>
+              <div class="card" style="margin-bottom:20px;">
+                <div class="card-title">Account Settings</div>
+                <div class="form-group">
+                  <label class="form-label">Current Password</label>
+                  <input type="password" class="form-input" placeholder="Enter current password">
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">New Password</label>
+                    <input type="password" class="form-input" placeholder="New password">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Confirm Password</label>
+                    <input type="password" class="form-input" placeholder="Confirm new password">
+                  </div>
+                </div>
+                <button class="btn btn-secondary btn-block">🔑 Update Password</button>
+              </div>
+              <div class="card">
+                <div class="card-title">Preferences</div>
+                <div class="form-check" style="margin-bottom:12px;">
+                  <input type="checkbox" id="pref-email" checked>
+                  <label for="pref-email">Email notifications for new job matches</label>
+                </div>
+                <div class="form-check" style="margin-bottom:12px;">
+                  <input type="checkbox" id="pref-sms">
+                  <label for="pref-sms">SMS alerts for interview reminders</label>
+                </div>
+                <div class="form-check" style="margin-bottom:12px;">
+                  <input type="checkbox" id="pref-marketing" checked>
+                  <label for="pref-marketing">Receive career advice and tips</label>
+                </div>
+                <button class="btn btn-secondary btn-block">💾 Save Preferences</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== CAREER ADVISOR ===== -->
+        <div id="page-career-advisor" class="page">
+          <div class="page-header">
+            <h1 class="page-title">🧭 Career Advisor</h1>
+            <p class="page-subtitle">Get AI-powered career advice, salary predictions, and growth insights.</p>
+          </div>
+          <div class="grid-2" style="margin-bottom:24px;">
+            <div class="card">
+              <div class="card-title">Salary Predictor</div>
+              <form>
+                <div class="form-group">
+                  <label class="form-label">Job Title</label>
+                  <input type="text" class="form-input" placeholder="e.g. Senior Frontend Developer">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Location</label>
+                  <input type="text" class="form-input" placeholder="e.g. San Francisco, CA">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Years of Experience</label>
+                  <input type="number" class="form-input" placeholder="5" min="0" max="50">
+                </div>
+                <button class="btn btn-primary btn-block">💰 Predict Salary</button>
+              </form>
+              <div style="margin-top:16px;padding:16px;background:var(--bg-card);border-radius:var(--radius-sm);display:none;" id="salary-result">
+                <div class="flex-between" style="margin-bottom:8px;">
+                  <span style="font-size:14px;color:var(--text-secondary);">Estimated Salary Range</span>
+                  <span style="font-size:20px;font-weight:700;color:var(--success);">$140k - $180k</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-bar-fill" style="width:75%;"></div>
+                </div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:8px;">Based on 1,234 similar profiles</div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">Career Advice</div>
+              <form>
+                <div class="form-group">
+                  <label class="form-label">Your Question</label>
+                  <textarea class="form-textarea" placeholder="Ask for career advice, e.g. 'How do I transition from frontend to full stack?'" rows="3"></textarea>
+                </div>
+                <button class="btn btn-primary btn-block">🤖 Get Advice</button>
+              </form>
+              <div class="empty-state" style="padding:20px;" id="advice-result">
+                <div class="empty-state-icon">🧭</div>
+                <div class="empty-state-title">Ask a question to get AI-powered career advice</div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">📈 Career Growth Path</div>
+            <div class="timeline">
+              <div class="timeline-item completed">
+                <div class="timeline-item-title">Junior Developer</div>
+                <div class="timeline-item-subtitle">0-2 years · Master fundamentals</div>
+              </div>
+              <div class="timeline-item completed">
+                <div class="timeline-item-title">Mid-Level Developer</div>
+                <div class="timeline-item-subtitle">2-5 years · Build expertise</div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-item-title">Senior Developer</div>
+                <div class="timeline-item-subtitle">5-8 years · Lead and architect</div>
+              </div>
+              <div class="timeline-item pending">
+                <div class="timeline-item-title">Tech Lead / Manager</div>
+                <div class="timeline-item-subtitle">8+ years · Strategic leadership</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== INTERVIEW PREP ===== -->
+        <div id="page-interview-prep" class="page">
+          <div class="page-header">
+            <h1 class="page-title">🎤 Interview Prep</h1>
+            <p class="page-subtitle">Practice with AI-generated interview questions tailored to your target role.</p>
+          </div>
+          <div class="grid-2">
+            <div>
+              <div class="card">
+                <div class="card-title">Practice Setup</div>
+                <form>
+                  <div class="form-group">
+                    <label class="form-label">Target Role</label>
+                    <input type="text" class="form-input" placeholder="e.g. Frontend Developer">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Interview Type</label>
+                    <select class="form-select">
+                      <option>Technical</option>
+                      <option>Behavioral</option>
+                      <option>System Design</option>
+                      <option>Mixed</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Difficulty</label>
+                    <select class="form-select">
+                      <option>Beginner</option>
+                      <option>Intermediate</option>
+                      <option>Advanced</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Number of Questions</label>
+                    <select class="form-select">
+                      <option>5</option>
+                      <option selected>10</option>
+                      <option>15</option>
+                      <option>20</option>
+                    </select>
+                  </div>
+                  <button class="btn btn-primary btn-block">🎤 Start Practice</button>
+                </form>
+              </div>
+              <div class="card" style="margin-top:16px;">
+                <div class="card-title">💡 Tips</div>
+                <ul style="padding-left:20px;font-size:13px;color:var(--text-secondary);line-height:2;">
+                  <li>Use the STAR method for behavioral questions</li>
+                  <li>Practice out loud for better retention</li>
+                  <li>Record yourself to identify areas of improvement</li>
+                  <li>Review common system design patterns</li>
+                </ul>
+              </div>
+            </div>
+            <div>
+              <div class="card" style="margin-bottom:16px;">
+                <div class="card-title">Practice Questions</div>
+                <div class="empty-state">
+                  <div class="empty-state-icon">🎤</div>
+                  <div class="empty-state-title">No questions generated yet</div>
+                  <div class="empty-state-text">Configure your practice session and start answering questions.</div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="flex-between" style="margin-bottom:12px;">
+                  <div class="card-title" style="margin-bottom:0;">Your Progress</div>
+                  <span style="font-size:13px;color:var(--text-secondary);">0/10 completed</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-bar-fill" style="width:0%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== JOB ANALYZER ===== -->
+        <div id="page-job-analyzer" class="page">
+          <div class="page-header">
+            <h1 class="page-title">🔬 Job Analyzer</h1>
+            <p class="page-subtitle">Analyze job descriptions to extract key requirements, skills, and insights.</p>
+          </div>
+          <div class="grid-2">
+            <div>
+              <div class="card">
+                <div class="card-title">Analyze Job Description</div>
+                <form>
+                  <div class="form-group">
+                    <label class="form-label">Job Description URL</label>
+                    <input type="url" class="form-input" placeholder="https://company.com/careers/job-id">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Or paste job description</label>
+                    <textarea class="form-textarea" placeholder="Paste the full job description here..." rows="8"></textarea>
+                  </div>
+                  <button class="btn btn-primary btn-block">🔬 Analyze</button>
+                </form>
+              </div>
+            </div>
+            <div>
+              <div class="card" style="margin-bottom:16px;">
+                <div class="card-title">Analysis Results</div>
+                <div class="empty-state">
+                  <div class="empty-state-icon">🔬</div>
+                  <div class="empty-state-title">No analysis yet</div>
+                  <div class="empty-state-text">Submit a job description to see detailed analysis.</div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-title">📊 Key Insights</div>
+                <div class="empty-state">
+                  <div class="empty-state-icon">📊</div>
+                  <div class="empty-state-title">Waiting for analysis...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== LINKEDIN OPTIMIZER ===== -->
+        <div id="page-linkedin-optimizer" class="page">
+          <div class="page-header">
+            <h1 class="page-title">💼 LinkedIn Optimizer</h1>
+            <p class="page-subtitle">Optimize your LinkedIn profile to attract recruiters and stand out.</p>
+          </div>
+          <div class="grid-2">
+            <div>
+              <div class="card">
+                <div class="card-title">Profile Analysis</div>
+                <form>
+                  <div class="form-group">
+                    <label class="form-label">LinkedIn Profile URL</label>
+                    <input type="url" class="form-input" placeholder="https://linkedin.com/in/yourprofile">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Target Job Title</label>
+                    <input type="text" class="form-input" placeholder="e.g. Senior Frontend Developer">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Industry</label>
+                    <select class="form-select">
+                      <option>Technology</option>
+                      <option>Finance</option>
+                      <option>Healthcare</option>
+                      <option>Consulting</option>
+                      <option>Other</option>
+                    </select>
+                  </div>
+                  <button class="btn btn-primary btn-block">💼 Analyze Profile</button>
+                </form>
+              </div>
+            </div>
+            <div>
+              <div class="card" style="margin-bottom:16px;">
+                <div class="card-title">Optimization Score</div>
+                <div class="empty-state">
+                  <div class="empty-state-icon">💼</div>
+                  <div class="empty-state-title">No analysis yet</div>
+                  <div class="empty-state-text">Enter your LinkedIn URL to get your optimization score.</div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-title">✅ Recommendations</div>
+                <div style="font-size:13px;color:var(--text-secondary);">
+                  <div class="flex gap-8" style="margin-bottom:8px;">
+                    <span>📸</span>
+                    <span>Add a professional profile photo</span>
+                  </div>
+                  <div class="flex gap-8" style="margin-bottom:8px;">
+                    <span>📝</span>
+                    <span>Optimize your headline with keywords</span>
+                  </div>
+                  <div class="flex gap-8" style="margin-bottom:8px;">
+                    <span>📄</span>
+                    <span>Expand your "About" section</span>
+                  </div>
+                  <div class="flex gap-8" style="margin-bottom:8px;">
+                    <span>🏆</span>
+                    <span>Add more skills and endorsements</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== PORTFOLIO ===== -->
+        <div id="page-portfolio" class="page">
+          <div class="page-header">
+            <h1 class="page-title">🌐 Portfolio Builder</h1>
+            <p class="page-subtitle">Create a stunning portfolio website to showcase your work.</p>
+          </div>
+          <div class="grid-2">
+            <div>
+              <div class="card">
+                <div class="card-title">Portfolio Details</div>
+                <form>
+                  <div class="form-group">
+                    <label class="form-label">Portfolio Title</label>
+                    <input type="text" class="form-input" placeholder="e.g. John Doe - Software Engineer">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Bio / About You</label>
+                    <textarea class="form-textarea" placeholder="Write a short bio..." rows="3"></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Projects (one per line)</label>
+                    <textarea class="form-textarea" placeholder="Project name - Description - Tech stack" rows="4"></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Skills</label>
+                    <input type="text" class="form-input" placeholder="JavaScript, React, Node.js, Python">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Custom Domain (optional)</label>
+                    <input type="text" class="form-input" placeholder="johndoe.dev">
+                  </div>
+                  <button class="btn btn-primary btn-block">🌐 Generate Portfolio</button>
+                </form>
+              </div>
+            </div>
+            <div>
+              <div class="card" style="margin-bottom:16px;">
+                <div class="card-title">Portfolio Preview</div>
+                <div class="empty-state">
+                  <div class="empty-state-icon">🌐</div>
+                  <div class="empty-state-title">No portfolio generated yet</div>
+                  <div class="empty-state-text">Fill in your details and generate your portfolio.</div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-title">📊 Portfolio Stats</div>
+                <div class="empty-state">
+                  <div class="empty-state-icon">📊</div>
+                  <div class="empty-state-title">No data available</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== ANALYTICS ===== -->
+        <div id="page-analytics" class="page">
+          <div class="page-header">
+            <h1 class="page-title">📈 Analytics</h1>
+            <p class="page-subtitle">Track your job search performance and application metrics.</p>
+          </div>
+          <div class="grid-4" style="margin-bottom:24px;">
+            <div class="stat-card">
+              <div class="stat-card-icon">📋</div>
+              <div class="stat-card-info">
+                <div class="stat-card-value">47</div>
+                <div class="stat-card-label">Total Applications</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-icon">📅</div>
+              <div class="stat-card-info">
+                <div class="stat-card-value">12</div>
+                <div class="stat-card-label">Interviews</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-icon">🎉</div>
+              <div class="stat-card-info">
+                <div class="stat-card-value">3</div>
+                <div class="stat-card-label">Offers</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-icon">📊</div>
+              <div class="stat-card-info">
+                <div class="stat-card-value">25.5%</div>
+                <div class="stat-card-label">Response Rate</div>
+              </div>
+            </div>
+          </div>
+          <div class="grid-2" style="margin-bottom:24px;">
+            <div class="card">
+              <div class="card-title">📈 Application Trends</div>
+              <div class="chart-placeholder">📊 Chart: Applications over time</div>
+            </div>
+            <div class="card">
+              <div class="card-title">🎯 Status Breakdown</div>
+              <div class="chart-placeholder">📊 Chart: Application status distribution</div>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-title">🏢 Top Companies</div>
+              <div style="font-size:13px;color:var(--text-secondary);">
+                <div class="flex-between" style="padding:8px 0;border-bottom:1px solid var(--border-color);">
+                  <span>TechCorp Inc.</span>
+                  <span>4 applications</span>
+                </div>
+                <div class="flex-between" style="padding:8px 0;border-bottom:1px solid var(--border-color);">
+                  <span>StartupX</span>
+                  <span>3 applications</span>
+                </div>
+                <div class="flex-between" style="padding:8px 0;border-bottom:1px solid var(--border-color);">
+                  <span>MobileFirst</span>
+                  <span>2 applications</span>
+                </div>
+                <div class="flex-between" style="padding:8px 0;">
+                  <span>DataSystems</span>
+                  <span>2 applications</span>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">📊 Monthly Activity</div>
+              <div style="font-size:13px;color:var(--text-secondary);">
+                <div class="flex-between" style="padding:8px 0;border-bottom:1px solid var(--border-color);">
+                  <span>July 2026</span>
+                  <span>15 applications, 3 interviews</span>
+                </div>
+                <div class="flex-between" style="padding:8px 0;border-bottom:1px solid var(--border-color);">
+                  <span>June 2026</span>
+                  <span>20 applications, 5 interviews</span>
+                </div>
+                <div class="flex-between" style="padding:8px 0;border-bottom:1px solid var(--border-color);">
+                  <span>May 2026</span>
+                  <span>12 applications, 4 interviews</span>
+                </div>
+                <div class="flex-between" style="padding:8px 0;">
+                  <span>April 2026</span>
+                  <span>8 applications, 2 interviews</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== ADMIN PANEL ===== -->
+        <div id="page-admin" class="page">
+          <div class="page-header">
+            <h1 class="page-title">⚙️ Admin Panel</h1>
+            <p class="page-subtitle">System administration and configuration management.</p>
+          </div>
+          <div class="tabs">
+            <button class="tab active">Users</button>
+            <button class="tab">System</button>
+            <button class="tab">Logs</button>
+            <button class="tab">API</button>
+          </div>
+          <div style="margin-bottom:20px;">
+            <div class="flex-between">
+              <span style="font-size:14px;color:var(--text-secondary);">Total Users: 1,234</span>
+              <button class="btn btn-sm btn-primary">➕ Add User</button>
+            </div>
+          </div>
+          <div class="card" style="margin-bottom:20px;">
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Joined</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>John Doe</td>
+                    <td>john@example.com</td>
+                    <td><span class="badge badge-primary">User</span></td>
+                    <td><span class="badge badge-success">Active</span></td>
+                    <td>Jan 15, 2026</td>
+                    <td><button class="btn btn-sm btn-secondary">Manage</button></td>
+                  </tr>
+                  <tr>
+                    <td>Jane Smith</td>
+                    <td>jane@example.com</td>
+                    <td><span class="badge badge-warning">Admin</span></td>
+                    <td><span class="badge badge-success">Active</span></td>
+                    <td>Feb 3, 2026</td>
+                    <td><button class="btn btn-sm btn-secondary">Manage</button></td>
+                  </tr>
+                  <tr>
+                    <td>Bob Johnson</td>
+                    <td>bob@example.com</td>
+                    <td><span class="badge badge-primary">User</span></td>
+                    <td><span class="badge badge-danger">Suspended</span></td>
+                    <td>Mar 22, 2026</td>
+                    <td><button class="btn btn-sm btn-secondary">Manage</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="grid-3">
+            <div class="card">
+              <div class="card-title">⚙️ System Info</div>
+              <div style="font-size:13px;color:var(--text-secondary);">
+                <div class="flex-between" style="margin-bottom:8px;"><span>Version</span><span>1.2.0</span></div>
+                <div class="flex-between" style="margin-bottom:8px;"><span>Node.js</span><span>18.17.0</span></div>
+                <div class="flex-between" style="margin-bottom:8px;"><span>Database</span><span>MongoDB 6.0</span></div>
+                <div class="flex-between"><span>Uptime</span><span>14d 7h 32m</span></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">📊 API Usage</div>
+              <div style="font-size:13px;color:var(--text-secondary);">
+                <div class="flex-between" style="margin-bottom:8px;"><span>Requests Today</span><span>2,847</span></div>
+                <div class="flex-between" style="margin-bottom:8px;"><span>Avg Response</span><span>142ms</span></div>
+                <div class="flex-between" style="margin-bottom:8px;"><span>Error Rate</span><span>0.3%</span></div>
+                <div class="flex-between"><span>Rate Limit</span><span>60/min</span></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">🔔 Recent Activity</div>
+              <div style="font-size:12px;color:var(--text-secondary);">
+                <div style="margin-bottom:8px;">🟢 New user registered</div>
+                <div style="margin-bottom:8px;">🟡 API rate limit warning</div>
+                <div style="margin-bottom:8px;">🟢 Database backup completed</div>
+                <div>🔴 Error: Failed email send (x2)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== COMPANY DASHBOARD ===== -->
+        <div id="page-company-dashboard" class="page">
+          <div class="page-header">
+            <h1 class="page-title">🏢 Company Dashboard</h1>
+            <p class="page-subtitle">Manage your company and job postings</p>
+          </div>
+
+          <!-- Stat Cards -->
+          <div class="grid-4" style="margin-bottom:32px;">
+            <div class="stat-card">
+              <div class="stat-card-icon">📋</div>
+              <div class="stat-card-info">
+                <div class="stat-card-value" id="company-stat-total-jobs">0</div>
+                <div class="stat-card-label">Total Jobs</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-icon">✅</div>
+              <div class="stat-card-info">
+                <div class="stat-card-value" id="company-stat-active-jobs">0</div>
+                <div class="stat-card-label">Active Jobs</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-icon">👥</div>
+              <div class="stat-card-info">
+                <div class="stat-card-value" id="company-stat-total-applicants">0</div>
+                <div class="stat-card-label">Applicants</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-icon">⭐</div>
+              <div class="stat-card-info">
+                <div class="stat-card-value" id="company-stat-shortlisted">0</div>
+                <div class="stat-card-label">Shortlisted</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="grid-2" style="margin-bottom:32px;">
+            <div class="card">
+              <div class="card-title">⚡ Quick Actions</div>
+              <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px;">
+                <button class="btn btn-primary" onclick="navigateTo('company-post-job')">📝 Post New Job</button>
+                <button class="btn btn-secondary" onclick="navigateTo('company-jobs')">📋 View All Jobs</button>
+                <button class="btn btn-secondary" onclick="navigateTo('company-profile')">✏️ Edit Company Profile</button>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">📊 Hiring Pipeline</div>
+              <div style="margin-top:12px;">
+                <div class="flex-between" style="margin-bottom:8px;">
+                  <span>New Applications</span>
+                  <span style="font-weight:700;color:var(--accent);" id="company-pipeline-new">0</span>
+                </div>
+                <div class="flex-between" style="margin-bottom:8px;">
+                  <span>Interviewing</span>
+                  <span style="font-weight:700;color:var(--warning);" id="company-pipeline-interviewing">0</span>
+                </div>
+                <div class="flex-between" style="margin-bottom:8px;">
+                  <span>Hired</span>
+                  <span style="font-weight:700;color:var(--success);" id="company-pipeline-hired">0</span>
+                </div>
+                <div class="flex-between" style="margin-bottom:8px;">
+                  <span>Rejected</span>
+                  <span style="font-weight:700;color:var(--danger);" id="company-pipeline-rejected">0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Applicants -->
+          <div class="card" style="margin-bottom:24px;">
+            <div class="card-title">🆕 Recent Applicants</div>
+            <div id="company-recent-applicants">
+              <div class="empty-state" style="padding:40px;text-align:center;color:var(--text-muted);">
+                No applicants yet. Post a job to start receiving applications.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== COMPANY PROFILE ===== -->
+        <div id="page-company-profile" class="page">
+          <div class="page-header">
+            <h1 class="page-title">✏️ Company Profile</h1>
+            <p class="page-subtitle">Manage your company information</p>
+          </div>
+          <div class="card" style="max-width:700px;">
+            <form id="company-profile-form">
+              <div id="company-profile-message"></div>
+              <div class="form-group">
+                <label class="form-label" for="cp-name">Company Name</label>
+                <input type="text" id="cp-name" class="form-input" placeholder="Acme Corp" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="cp-industry">Industry</label>
+                <input type="text" id="cp-industry" class="form-input" placeholder="Technology, Healthcare, Finance...">
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="cp-size">Company Size</label>
+                  <select id="cp-size" class="form-input">
+                    <option value="">Select size</option>
+                    <option value="1-10">1-10 employees</option>
+                    <option value="11-50">11-50 employees</option>
+                    <option value="51-200">51-200 employees</option>
+                    <option value="201-500">201-500 employees</option>
+                    <option value="501-1000">501-1000 employees</option>
+                    <option value="1001+">1001+ employees</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="cp-website">Website</label>
+                  <input type="url" id="cp-website" class="form-input" placeholder="https://example.com">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="cp-location">Location</label>
+                <input type="text" id="cp-location" class="form-input" placeholder="City, State">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="cp-description">Company Description</label>
+                <textarea id="cp-description" class="form-input" rows="5" placeholder="Tell us about your company..."></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary">💾 Save Profile</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- ===== COMPANY JOBS ===== -->
+        <div id="page-company-jobs" class="page">
+          <div class="page-header">
+            <h1 class="page-title">📋 My Job Postings</h1>
+            <p class="page-subtitle">Manage all jobs posted by your company</p>
+          </div>
+          <div style="margin-bottom:20px;">
+            <button class="btn btn-primary" onclick="navigateTo('company-post-job')">➕ Post New Job</button>
+          </div>
+          <div id="company-jobs-list">
+            <div class="empty-state" style="padding:60px;text-align:center;color:var(--text-muted);">
+              <div style="font-size:48px;margin-bottom:16px;">📋</div>
+              <div style="font-size:18px;font-weight:600;margin-bottom:8px;">No jobs posted yet</div>
+              <p style="margin-bottom:20px;">Post your first job to start receiving applications from qualified candidates.</p>
+              <button class="btn btn-primary" onclick="navigateTo('company-post-job')">Post a Job</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== COMPANY POST JOB ===== -->
+        <div id="page-company-post-job" class="page">
+          <div class="page-header">
+            <h1 class="page-title">📝 Post a New Job</h1>
+            <p class="page-subtitle">Create a new job listing to attract top talent</p>
+          </div>
+          <div class="card" style="max-width:800px;">
+            <form id="company-post-job-form">
+              <div id="company-post-job-message"></div>
+              <div class="form-group">
+                <label class="form-label" for="cpj-title">Job Title *</label>
+                <input type="text" id="cpj-title" class="form-input" placeholder="Senior Software Engineer" required>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="cpj-location">Location</label>
+                  <input type="text" id="cpj-location" class="form-input" placeholder="San Francisco, CA (or Remote)">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="cpj-type">Job Type</label>
+                  <select id="cpj-type" class="form-input">
+                    <option value="Full-time">Full-time</option>
+                    <option value="Part-time">Part-time</option>
+                    <option value="Contract">Contract</option>
+                    <option value="Internship">Internship</option>
+                    <option value="Freelance">Freelance</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="cpj-experience">Experience Level</label>
+                  <select id="cpj-experience" class="form-input">
+                    <option value="Entry-Level">Entry-Level</option>
+                    <option value="Mid-Level" selected>Mid-Level</option>
+                    <option value="Senior">Senior</option>
+                    <option value="Lead">Lead</option>
+                    <option value="Executive">Executive</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="cpj-industry">Industry</label>
+                  <input type="text" id="cpj-industry" class="form-input" placeholder="Technology, Healthcare...">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="cpj-salary">Salary Range</label>
+                <input type="text" id="cpj-salary" class="form-input" placeholder="$80,000 - $120,000">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="cpj-skills">Required Skills (comma separated)</label>
+                <input type="text" id="cpj-skills" class="form-input" placeholder="JavaScript, React, Node.js, SQL">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="cpj-description">Job Description *</label>
+                <textarea id="cpj-description" class="form-input" rows="6" placeholder="Describe the role, responsibilities, and what makes this opportunity great..." required></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="cpj-requirements">Requirements</label>
+                <textarea id="cpj-requirements" class="form-input" rows="4" placeholder="List key qualifications and requirements..."></textarea>
+              </div>
+              <div style="display:flex;gap:12px;">
+                <button type="submit" class="btn btn-primary btn-lg">📢 Post Job</button>
+                <button type="button" class="btn btn-secondary btn-lg" onclick="navigateTo('company-jobs')">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- ===== COMPANY APPLICANTS ===== -->
+        <div id="page-company-applicants" class="page">
+          <div class="page-header">
+            <h1 class="page-title">👥 Applicants</h1>
+            <p class="page-subtitle" id="company-applicants-subtitle">Review candidates for your job posting</p>
+          </div>
+          <div style="margin-bottom:16px;">
+            <button class="btn btn-sm btn-secondary" onclick="navigateTo('company-jobs')">← Back to Jobs</button>
+          </div>
+          <div id="company-applicants-list">
+            <div class="empty-state" style="padding:60px;text-align:center;color:var(--text-muted);">
+              <div style="font-size:48px;margin-bottom:16px;">👥</div>
+              <div style="font-size:18px;font-weight:600;margin-bottom:8px;">No applicants yet</div>
+              <p>Applications will appear here when candidates apply to your jobs.</p>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /page-content -->
+    </main>
+  </div><!-- /app-layout -->
+
+
+  <!-- ============ MODAL ============ -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title" id="modal-title">Modal Title</div>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body" id="modal-body">
+        <p>Modal content goes here.</p>
+      </div>
+      <div class="modal-footer" id="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="closeModal()">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ============ SCRIPTS ============ -->
+  <script>
+    // Stub navigateTo so inline onclick handlers work before router.js loads
+    function navigateTo(page) {
+      window.location.hash = page;
+      if (typeof renderPage === 'function') renderPage();
+    }
+  </script>
+
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/router.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
