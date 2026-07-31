@@ -3,7 +3,13 @@
   "builds": [
     {
       "src": "job-application-assistant-node/server.js",
-      "use": "@vercel/node"
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": [
+          "job-application-assistant-node/frontend/**",
+          "job-application-assistant-node/node_modules/sql.js/dist/sql-wasm.wasm"
+        ]
+      }
     }
   ],
   "routes": [
