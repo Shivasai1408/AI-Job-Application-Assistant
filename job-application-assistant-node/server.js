@@ -3,13 +3,14 @@ const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
 
-async function start() {
+const PORT = process.env.PORT || 3000;
+
+async function createApp() {
     const { initDb } = require('./backend/db');
     await initDb();
     console.log('Database initialized');
 
     const app = express();
-    const PORT = process.env.PORT || 3000;
 
     app.use(cors());
     app.use(express.json({ limit: '50mb' }));
@@ -62,16 +63,35 @@ async function start() {
         res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
     });
 
-    if (require.main === module) {
-        app.listen(PORT, () => {
-            console.log(`Server running on http://localhost:${PORT}`);
-        });
-    }
-
-    module.exports = app;
+    return app;
 }
 
-start().catch(err => {
-    console.error('Failed to start server:', err);
-    process.exit(1);
-});
+let appPromise = null;
+function getApp() {
+    if (!appPromise) {
+        appPromise = createApp().catch(err => {
+            appPromise = null;
+            throw err;
+        });
+    }
+    return appPromise;
+}
+
+// Serverless platforms (Vercel) require the module to export a request handler.
+module.exports = async (req, res) => {
+    const app = await getApp();
+    return app(req, res);
+};
+
+if (require.main === module) {
+    getApp()
+        .then(app => {
+            app.listen(PORT, () => {
+                console.log(`Server running on http://localhost:${PORT}`);
+            });
+        })
+        .catch(err => {
+            console.error('Failed to start server:', err);
+            process.exit(1);
+        });
+}
