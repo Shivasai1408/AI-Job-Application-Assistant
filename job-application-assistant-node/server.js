@@ -79,8 +79,15 @@ function getApp() {
 
 // Serverless platforms (Vercel) require the module to export a request handler.
 module.exports = async (req, res) => {
-    const app = await getApp();
-    return app(req, res);
+    try {
+        const app = await getApp();
+        return app(req, res);
+    } catch (err) {
+        console.error('Failed to initialize application:', err);
+        res.statusCode = 500;
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ error: 'Application failed to initialize', detail: err.message }));
+    }
 };
 
 if (require.main === module) {

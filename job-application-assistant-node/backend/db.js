@@ -36,8 +36,12 @@ function writeDb(sqlDb, dbPath) {
     }
 }
 
+// sql.js loads sql-wasm.wasm from disk at runtime; point it at the installed copy so
+// bundlers that only trace JS requires still resolve it.
+const SQL_JS_DIST = path.dirname(require.resolve('sql.js'));
+
 async function initDb() {
-    const SQL = await initSqlJs();
+    const SQL = await initSqlJs({ locateFile: file => path.join(SQL_JS_DIST, file) });
     const DB_PATH = resolveDbPath();
 
     // A database bundled with the deployment is read-only, but can seed a fresh instance.
