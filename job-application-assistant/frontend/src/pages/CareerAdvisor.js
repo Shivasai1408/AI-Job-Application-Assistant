@@ -131,7 +131,7 @@ function CareerAdvisor() {
   const getGrowthColor = (outlook) => {
     const colors = {
       excellent: '#10b981',
-      good: '#dc2626',
+      good: '#34d399',
       moderate: '#f59e0b',
       limited: '#ef4444',
     };
@@ -143,7 +143,7 @@ function CareerAdvisor() {
       beginner: '#10b981',
       intermediate: '#f59e0b',
       advanced: '#ef4444',
-      expert: '#6b7280',
+      expert: '#4b5563',
     };
     return colors[difficulty?.toLowerCase()] || '#6b7280';
   };
