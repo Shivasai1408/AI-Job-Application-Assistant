@@ -146,8 +146,8 @@ function LinkedInOptimizer() {
         <svg width={size} height={size} className="score-ring">
           <defs>
             <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#0d9488" />
-              <stop offset="100%" stopColor="#0891b2" />
+              <stop offset="0%" stopColor="#dc2626" />
+              <stop offset="100%" stopColor="#6b7280" />
             </linearGradient>
           </defs>
           <circle className="ring-bg" cx={size / 2} cy={size / 2} r={radius} />
@@ -177,7 +177,7 @@ function LinkedInOptimizer() {
     fontSize: 14,
     fontWeight: 600,
     color: isActive ? 'var(--primary-light)' : 'var(--text-muted)',
-    background: isActive ? 'rgba(13, 148, 136, 0.08)' : 'transparent',
+    background: isActive ? 'rgba(220, 38, 38, 0.08)' : 'transparent',
     border: 'none',
     borderBottom: isActive ? '2px solid var(--primary)' : '2px solid transparent',
     cursor: 'pointer',

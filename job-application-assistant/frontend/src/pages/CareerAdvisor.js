@@ -131,7 +131,7 @@ function CareerAdvisor() {
   const getGrowthColor = (outlook) => {
     const colors = {
       excellent: '#10b981',
-      good: '#0d9488',
+      good: '#dc2626',
       moderate: '#f59e0b',
       limited: '#ef4444',
     };
@@ -143,7 +143,7 @@ function CareerAdvisor() {
       beginner: '#10b981',
       intermediate: '#f59e0b',
       advanced: '#ef4444',
-      expert: '#8b5cf6',
+      expert: '#6b7280',
     };
     return colors[difficulty?.toLowerCase()] || '#6b7280';
   };
@@ -191,7 +191,7 @@ function CareerAdvisor() {
               fontSize: 14,
               fontWeight: 600,
               color: activeTab === 'advice' ? 'var(--primary-light)' : 'var(--text-muted)',
-              background: activeTab === 'advice' ? 'rgba(13, 148, 136, 0.08)' : 'transparent',
+              background: activeTab === 'advice' ? 'rgba(220, 38, 38, 0.08)' : 'transparent',
               border: 'none',
               borderBottom: activeTab === 'advice' ? '2px solid var(--primary)' : '2px solid transparent',
               cursor: 'pointer',
@@ -212,7 +212,7 @@ function CareerAdvisor() {
               fontSize: 14,
               fontWeight: 600,
               color: activeTab === 'salary' ? 'var(--primary-light)' : 'var(--text-muted)',
-              background: activeTab === 'salary' ? 'rgba(13, 148, 136, 0.08)' : 'transparent',
+              background: activeTab === 'salary' ? 'rgba(220, 38, 38, 0.08)' : 'transparent',
               border: 'none',
               borderBottom: activeTab === 'salary' ? '2px solid var(--primary)' : '2px solid transparent',
               cursor: 'pointer',

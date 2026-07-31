@@ -77,7 +77,7 @@ function Dashboard() {
   return (
     <div>
       {/* Welcome Section */}
-      <div className="card mb-6" style={{ background: 'linear-gradient(135deg, #4f46e5 0%, #0ea5e9 100%)', color: 'white', border: 'none' }}>
+      <div className="card mb-6" style={{ background: 'linear-gradient(135deg, #991b1b 0%, #737373 100%)', color: 'white', border: 'none' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 8 }}>
@@ -88,7 +88,7 @@ function Dashboard() {
             </p>
           </div>
           <div style={{ display: 'flex', gap: 12 }}>
-            <Link to="/jobs" className="btn btn-primary" style={{ background: 'white', color: '#4f46e5' }}>
+            <Link to="/jobs" className="btn btn-primary" style={{ background: 'white', color: '#991b1b' }}>
               🔍 Browse Jobs
             </Link>
             <Link to="/resumes" className="btn" style={{ background: 'rgba(255,255,255,0.2)', color: 'white' }}>

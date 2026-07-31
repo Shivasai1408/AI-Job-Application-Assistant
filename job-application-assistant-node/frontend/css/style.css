@@ -7,25 +7,25 @@
    1. ROOT VARIABLES & THEME
    ============================================ */
 :root {
-  /* Primary Palette - Electric Blue/Violet */
-  --primary: #6366f1;
-  --primary-dark: #4f46e5;
-  --primary-light: #a5b4fc;
-  --primary-lighter: #e0e7ff;
-  --primary-gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
-  --primary-glow: 0 0 30px rgba(99, 102, 241, 0.4);
+  /* Primary Palette - Red */
+  --primary: #dc2626;
+  --primary-dark: #991b1b;
+  --primary-light: #f87171;
+  --primary-lighter: #fee2e2;
+  --primary-gradient: linear-gradient(135deg, #dc2626, #6b7280);
+  --primary-glow: 0 0 30px rgba(220, 38, 38, 0.4);
 
   /* Secondary Palette */
-  --secondary: #8b5cf6;
-  --secondary-dark: #7c3aed;
-  --secondary-light: #c4b5fd;
-  --secondary-gradient: linear-gradient(135deg, #8b5cf6, #6366f1);
+  --secondary: #6b7280;
+  --secondary-dark: #4b5563;
+  --secondary-light: #9ca3af;
+  --secondary-gradient: linear-gradient(135deg, #6b7280, #dc2626);
 
-  /* Accent - Cyan */
-  --accent: #06b6d4;
-  --accent-dark: #0891b2;
-  --accent-light: #67e8f9;
-  --accent-gradient: linear-gradient(135deg, #06b6d4, #6366f1);
+  /* Accent - Gray */
+  --accent: #9ca3af;
+  --accent-dark: #6b7280;
+  --accent-light: #9ca3af;
+  --accent-gradient: linear-gradient(135deg, #9ca3af, #dc2626);
 
   /* Semantic Colors */
   --success: #10b981;
@@ -46,31 +46,31 @@
   --danger-bg: rgba(239, 68, 68, 0.15);
   --danger-gradient: linear-gradient(135deg, #ef4444, #dc2626);
 
-  --info: #22d3ee;
-  --info-bg: rgba(34, 211, 238, 0.15);
+  --info: #a3a3a3;
+  --info-bg: rgba(163, 163, 163, 0.15);
 
-  /* Dark Theme Backgrounds - Deep Navy */
-  --bg-primary: #0a0a1a;
-  --bg-secondary: #0f0f23;
-  --bg-tertiary: #1a1a35;
+  /* Dark Theme Backgrounds - Black */
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #141414;
+  --bg-tertiary: #1f1f1f;
   --bg-card: rgba(255, 255, 255, 0.04);
   --bg-card-hover: rgba(255, 255, 255, 0.07);
   --bg-glass: rgba(255, 255, 255, 0.05);
   --bg-glass-hover: rgba(255, 255, 255, 0.09);
-  --bg-sidebar: rgba(10, 10, 26, 0.97);
+  --bg-sidebar: rgba(10, 10, 10, 0.97);
   --bg-overlay: rgba(0, 0, 0, 0.85);
   --bg-input: rgba(255, 255, 255, 0.06);
 
   /* Text Colors */
-  --text-primary: #f1f5f9;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --text-inverse: #0a0a1a;
+  --text-primary: #f5f5f5;
+  --text-secondary: #a3a3a3;
+  --text-muted: #737373;
+  --text-inverse: #0a0a0a;
   --text-on-primary: #ffffff;
 
   /* Border Colors */
-  --border-color: rgba(99, 102, 241, 0.12);
-  --border-color-hover: rgba(99, 102, 241, 0.25);
+  --border-color: rgba(220, 38, 38, 0.12);
+  --border-color-hover: rgba(220, 38, 38, 0.25);
   --border-color-light: rgba(255, 255, 255, 0.04);
 
   /* Shadows */
@@ -80,7 +80,7 @@
   --shadow-md: 0 6px 12px rgba(0, 0, 0, 0.6), 0 2px 6px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.7), 0 4px 10px rgba(0, 0, 0, 0.4);
   --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.8), 0 8px 20px rgba(0, 0, 0, 0.5);
-  --shadow-glow-primary: 0 0 30px rgba(99, 102, 241, 0.4);
+  --shadow-glow-primary: 0 0 30px rgba(220, 38, 38, 0.4);
   --shadow-glow-success: 0 0 30px rgba(16, 185, 129, 0.4);
   --shadow-glow-danger: 0 0 30px rgba(239, 68, 68, 0.4);
   --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.5);
@@ -430,7 +430,7 @@ input, textarea, select {
 
 .topbar-search:focus-within {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
   background: rgba(255, 255, 255, 0.08);
 }
 
@@ -730,11 +730,11 @@ input, textarea, select {
 .btn-primary {
   background: var(--primary-gradient);
   color: var(--text-on-primary);
-  box-shadow: 0 4px 15px rgba(13, 148, 136, 0.3);
+  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
 }
 
 .btn-primary:hover {
-  box-shadow: 0 6px 25px rgba(13, 148, 136, 0.45);
+  box-shadow: 0 6px 25px rgba(220, 38, 38, 0.45);
   transform: translateY(-1px);
 }
 
@@ -767,11 +767,11 @@ input, textarea, select {
   background-size: 200% 200%;
   color: var(--text-on-primary);
   animation: gradientShift 4s ease infinite;
-  box-shadow: 0 4px 20px rgba(13, 148, 136, 0.35);
+  box-shadow: 0 4px 20px rgba(220, 38, 38, 0.35);
 }
 
 .btn-gradient:hover {
-  box-shadow: 0 6px 30px rgba(13, 148, 136, 0.5);
+  box-shadow: 0 6px 30px rgba(220, 38, 38, 0.5);
   transform: translateY(-1px);
 }
 
@@ -920,7 +920,7 @@ input, textarea, select {
 .form-textarea:focus,
 .form-select:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
   background: rgba(255, 255, 255, 0.08);
 }
 
@@ -1056,7 +1056,7 @@ input, textarea, select {
 }
 
 .stat-card-icon.primary {
-  background: rgba(13, 148, 136, 0.15);
+  background: rgba(220, 38, 38, 0.15);
   color: var(--primary-light);
 }
 
@@ -1076,7 +1076,7 @@ input, textarea, select {
 }
 
 .stat-card-icon.accent {
-  background: rgba(6, 182, 212, 0.15);
+  background: rgba(156, 163, 175, 0.15);
   color: var(--accent-light);
 }
 
@@ -1154,7 +1154,7 @@ input, textarea, select {
 }
 
 .badge-primary {
-  background: rgba(13, 148, 136, 0.15);
+  background: rgba(220, 38, 38, 0.15);
   color: var(--primary-light);
 }
 
@@ -1294,9 +1294,9 @@ input, textarea, select {
 }
 
 .tag-primary {
-  background: rgba(13, 148, 136, 0.12);
+  background: rgba(220, 38, 38, 0.12);
   color: var(--primary-light);
-  border-color: rgba(13, 148, 136, 0.2);
+  border-color: rgba(220, 38, 38, 0.2);
 }
 
 .tag-success {
@@ -1468,7 +1468,7 @@ input, textarea, select {
 
 .alert-info {
   background: var(--info-bg);
-  border: 1px solid rgba(6, 182, 212, 0.2);
+  border: 1px solid rgba(156, 163, 175, 0.2);
   color: var(--accent-light);
 }
 
@@ -1662,10 +1662,10 @@ input, textarea, select {
   width: 200%;
   height: 200%;
   background: 
-    radial-gradient(ellipse at 20% 50%, rgba(13, 148, 136, 0.2) 0%, transparent 50%),
+    radial-gradient(ellipse at 20% 50%, rgba(220, 38, 38, 0.2) 0%, transparent 50%),
     radial-gradient(ellipse at 80% 20%, rgba(8, 145, 178, 0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at 40% 80%, rgba(34, 211, 238, 0.12) 0%, transparent 50%),
-    radial-gradient(ellipse at 60% 40%, rgba(13, 148, 136, 0.1) 0%, transparent 50%);
+    radial-gradient(ellipse at 40% 80%, rgba(163, 163, 163, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 60% 40%, rgba(220, 38, 38, 0.1) 0%, transparent 50%);
   animation: authBgAnimation 12s ease-in-out infinite alternate;
   z-index: 0;
 }
@@ -1699,10 +1699,10 @@ input, textarea, select {
   width: 200%;
   height: 200%;
   background: 
-    radial-gradient(ellipse at 20% 50%, rgba(13, 148, 136, 0.2) 0%, transparent 50%),
+    radial-gradient(ellipse at 20% 50%, rgba(220, 38, 38, 0.2) 0%, transparent 50%),
     radial-gradient(ellipse at 80% 20%, rgba(8, 145, 178, 0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at 40% 80%, rgba(34, 211, 238, 0.12) 0%, transparent 50%),
-    radial-gradient(ellipse at 60% 40%, rgba(13, 148, 136, 0.1) 0%, transparent 50%);
+    radial-gradient(ellipse at 40% 80%, rgba(163, 163, 163, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 60% 40%, rgba(220, 38, 38, 0.1) 0%, transparent 50%);
   animation: authBgAnimation 12s ease-in-out infinite alternate;
   z-index: 0;
 }
@@ -2379,7 +2379,7 @@ input, textarea, select {
 .timeline-item.active::before {
   background: var(--primary);
   border-color: var(--primary-light);
-  box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.2);
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.2);
 }
 
 .timeline-item.completed::before {
@@ -2540,7 +2540,7 @@ input, textarea, select {
 
 .search-filter-bar .search-field input:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
 }
 
 .search-filter-bar .search-field .search-field-icon {
@@ -2576,7 +2576,7 @@ input, textarea, select {
 
 .search-filter-bar select:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
 }
 
 /* ============================================
@@ -2662,7 +2662,7 @@ input, textarea, select {
    30. CODE BLOCK
    ============================================ */
 .code-block {
-  background: #1a1a2e;
+  background: #1f1f1f;
   border: 1px solid var(--border-color);
   border-radius: var(--radius);
   padding: var(--space-5);
@@ -2670,7 +2670,7 @@ input, textarea, select {
   font-size: var(--font-size-sm);
   line-height: 1.7;
   overflow-x: auto;
-  color: #e2e8f0;
+  color: #e5e5e5;
   position: relative;
 }
 
@@ -2712,7 +2712,7 @@ input, textarea, select {
 
 code:not(.code-block code) {
   padding: 2px 6px;
-  background: rgba(13, 148, 136, 0.1);
+  background: rgba(220, 38, 38, 0.1);
   border-radius: var(--radius-xs);
   font-family: var(--font-mono);
   font-size: 0.85em;
@@ -2827,7 +2827,7 @@ code:not(.code-block code) {
 }
 
 .notification-item.unread {
-  background: rgba(13, 148, 136, 0.05);
+  background: rgba(220, 38, 38, 0.05);
 }
 
 .notification-item .notif-icon {
@@ -2939,7 +2939,7 @@ code:not(.code-block code) {
 }
 
 .text-gradient-cool {
-  background: linear-gradient(135deg, var(--secondary), #6366f1);
+  background: linear-gradient(135deg, var(--secondary), #dc2626);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

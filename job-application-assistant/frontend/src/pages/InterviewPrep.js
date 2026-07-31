@@ -132,8 +132,8 @@ function InterviewPrep() {
         <svg className="score-ring" width={size} height={size}>
           <defs>
             <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#0d9488" />
-              <stop offset="100%" stopColor="#0891b2" />
+              <stop offset="0%" stopColor="#dc2626" />
+              <stop offset="100%" stopColor="#6b7280" />
             </linearGradient>
           </defs>
           <circle
@@ -172,10 +172,10 @@ function InterviewPrep() {
     border: 'none',
     cursor: 'pointer',
     transition: 'all 0.25s ease',
-    background: isActive ? 'linear-gradient(135deg, #0d9488, #0891b2)' : 'rgba(255,255,255,0.04)',
+    background: isActive ? 'linear-gradient(135deg, #dc2626, #6b7280)' : 'rgba(255,255,255,0.04)',
     color: isActive ? '#ffffff' : '#94a3b8',
     border: isActive ? 'none' : '1px solid rgba(255,255,255,0.07)',
-    boxShadow: isActive ? '0 4px 15px rgba(13,148,136,0.3)' : 'none',
+    boxShadow: isActive ? '0 4px 15px rgba(220, 38, 38,0.3)' : 'none',
   });
 
   // --- Render ---
@@ -338,8 +338,8 @@ function InterviewPrep() {
                   )}
                   {questions.prep_tips && questions.prep_tips.length > 0 && (
                     <div style={{
-                      background: 'rgba(13,148,136,0.08)',
-                      border: '1px solid rgba(13,148,136,0.15)',
+                      background: 'rgba(220, 38, 38,0.08)',
+                      border: '1px solid rgba(220, 38, 38,0.15)',
                       borderRadius: 6,
                       padding: '12px 16px',
                       marginTop: 8,

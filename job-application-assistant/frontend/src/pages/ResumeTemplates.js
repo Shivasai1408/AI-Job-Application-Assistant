@@ -7,10 +7,10 @@ const TEMPLATES = [
     id: 'modern',
     name: 'Modern',
     description: 'Clean, contemporary design with a professional color accent',
-    color: '#4f46e5',
+    color: '#991b1b',
     icon: '🎨',
     preview: {
-      header: { bg: '#4f46e5', text: '#ffffff' },
+      header: { bg: '#991b1b', text: '#ffffff' },
       sections: ['Summary', 'Skills', 'Experience', 'Education', 'Certifications'],
     },
   },
@@ -32,7 +32,7 @@ const TEMPLATES = [
     color: '#ec4899',
     icon: '✨',
     preview: {
-      header: { bg: 'linear-gradient(135deg, #ec4899, #8b5cf6)', text: '#ffffff' },
+      header: { bg: 'linear-gradient(135deg, #ec4899, #6b7280)', text: '#ffffff' },
       sections: ['Personal Brand', 'Skills Showcase', 'Featured Work', 'Experience', 'Education'],
     },
   },
@@ -153,7 +153,7 @@ function ResumeTemplates() {
       .split('\n')
       .map((line) => {
         if (line.startsWith('# ')) return `<h1 style="font-size:24px;font-weight:700;margin-bottom:4px;">${line.slice(2)}</h1>`;
-        if (line.startsWith('## ')) return `<h2 style="font-size:16px;font-weight:600;margin-top:16px;margin-bottom:8px;color:${selectedTemplate?.color || '#4f46e5'};">${line.slice(3)}</h2>`;
+        if (line.startsWith('## ')) return `<h2 style="font-size:16px;font-weight:600;margin-top:16px;margin-bottom:8px;color:${selectedTemplate?.color || '#991b1b'};">${line.slice(3)}</h2>`;
         if (line.startsWith('- ')) return `<li style="margin-left:16px;font-size:13px;line-height:1.6;">${line.slice(2)}</li>`;
         if (line.startsWith('•')) return `<li style="margin-left:16px;font-size:13px;line-height:1.6;">${line.slice(1)}</li>`;
         if (line.trim() === '') return '<br/>';

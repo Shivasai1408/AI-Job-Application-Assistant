@@ -168,7 +168,7 @@ function PortfolioBuilder() {
 
   const getThemePreviewStyle = (themeId) => {
     const styles = {
-      modern: { primary: '#0d9488', secondary: '#0891b2' },
+      modern: { primary: '#dc2626', secondary: '#6b7280' },
       classic: { primary: '#1a365d', secondary: '#c53030' },
       minimalist: { primary: '#000000', secondary: '#4a5568' },
       creative: { primary: '#6b46c1', secondary: '#d53f8c' },
