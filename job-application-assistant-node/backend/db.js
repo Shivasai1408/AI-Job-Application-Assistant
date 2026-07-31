@@ -4,18 +4,50 @@ const fs = require('fs');
 
 let _db = null;
 
-async function initDb() {
-    const SQL = await initSqlJs();
+const IS_SERVERLESS = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+
+function resolveDbPath() {
+    if (process.env.DATABASE_PATH) {
+        return process.env.DATABASE_PATH;
+    }
+    if (IS_SERVERLESS) {
+        console.warn(
+            'Serverless environment detected: the project filesystem is read-only, so the database ' +
+            'is stored in /tmp and is lost when the instance is recycled. Set DATABASE_PATH to a ' +
+            'persistent location or use a hosted database for durable storage.'
+        );
+        return path.join('/tmp', 'job_assistant.db');
+    }
     const DATA_DIR = path.join(__dirname, '..', 'data');
     if (!fs.existsSync(DATA_DIR)) {
         fs.mkdirSync(DATA_DIR, { recursive: true });
     }
-    const DB_PATH = process.env.DATABASE_PATH || path.join(DATA_DIR, 'job_assistant.db');
+    return path.join(DATA_DIR, 'job_assistant.db');
+}
+
+function writeDb(sqlDb, dbPath) {
+    if (!dbPath) return;
+    try {
+        fs.mkdirSync(path.dirname(dbPath), { recursive: true });
+        fs.writeFileSync(dbPath, Buffer.from(sqlDb.export()));
+    } catch (e) {
+        console.warn(`Could not persist database to ${dbPath} (${e.code || e.message}); ` +
+            'continuing with an in-memory database.');
+    }
+}
+
+async function initDb() {
+    const SQL = await initSqlJs();
+    const DB_PATH = resolveDbPath();
+
+    // A database bundled with the deployment is read-only, but can seed a fresh instance.
+    const SEED_PATH = path.join(__dirname, '..', 'data', 'job_assistant.db');
 
     let sqlDb;
     if (fs.existsSync(DB_PATH)) {
-        const buffer = fs.readFileSync(DB_PATH);
-        sqlDb = new SQL.Database(buffer);
+        sqlDb = new SQL.Database(fs.readFileSync(DB_PATH));
+    } else if (IS_SERVERLESS && fs.existsSync(SEED_PATH)) {
+        sqlDb = new SQL.Database(fs.readFileSync(SEED_PATH));
     } else {
         sqlDb = new SQL.Database();
     }
@@ -309,9 +341,7 @@ async function initDb() {
     sqlDb.run(schemaSQL);
 
     // Persist the initial schema to disk
-    const initialData = sqlDb.export();
-    const initialBuffer = Buffer.from(initialData);
-    fs.writeFileSync(DB_PATH, initialBuffer);
+    writeDb(sqlDb, DB_PATH);
 
     _db = createWrapper(sqlDb, DB_PATH);
     return _db;
@@ -319,9 +349,7 @@ async function initDb() {
 
 function createWrapper(sqlDb, dbPath) {
     function save() {
-        const data = sqlDb.export();
-        const buffer = Buffer.from(data);
-        fs.writeFileSync(dbPath, buffer);
+        writeDb(sqlDb, dbPath);
     }
 
     return {
