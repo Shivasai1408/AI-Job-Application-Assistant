@@ -1179,7 +1179,7 @@ input, textarea, select {
 }
 
 .badge-secondary {
-  background: rgba(8, 145, 178, 0.15);
+  background: rgba(107, 114, 128, 0.15);
   color: var(--secondary-light);
 }
 
@@ -1663,7 +1663,7 @@ input, textarea, select {
   height: 200%;
   background: 
     radial-gradient(ellipse at 20% 50%, rgba(220, 38, 38, 0.2) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(8, 145, 178, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(107, 114, 128, 0.15) 0%, transparent 50%),
     radial-gradient(ellipse at 40% 80%, rgba(163, 163, 163, 0.12) 0%, transparent 50%),
     radial-gradient(ellipse at 60% 40%, rgba(220, 38, 38, 0.1) 0%, transparent 50%);
   animation: authBgAnimation 12s ease-in-out infinite alternate;
@@ -1700,7 +1700,7 @@ input, textarea, select {
   height: 200%;
   background: 
     radial-gradient(ellipse at 20% 50%, rgba(220, 38, 38, 0.2) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(8, 145, 178, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(107, 114, 128, 0.15) 0%, transparent 50%),
     radial-gradient(ellipse at 40% 80%, rgba(163, 163, 163, 0.12) 0%, transparent 50%),
     radial-gradient(ellipse at 60% 40%, rgba(220, 38, 38, 0.1) 0%, transparent 50%);
   animation: authBgAnimation 12s ease-in-out infinite alternate;

@@ -22,7 +22,7 @@
       --text-muted: rgba(255,255,255,0.35);
       --accent: #dc2626;
       --accent-hover: #991b1b;
-      --accent-glow: rgba(13,148,136,0.2);
+      --accent-glow: rgba(220, 38, 38,0.2);
       --danger: #ef4444;
       --warning: #f59e0b;
       --success: #10b981;
@@ -198,7 +198,7 @@
       color: var(--text-primary);
     }
     .sidebar-nav-item.active {
-      background: rgba(13,148,136,0.12);
+      background: rgba(220, 38, 38,0.12);
       color: var(--accent);
       font-weight: 500;
     }
@@ -430,11 +430,11 @@
       font-size: 12px;
       font-weight: 500;
     }
-    .badge-primary { background: rgba(13,148,136,0.12); color: var(--accent); }
+    .badge-primary { background: rgba(220, 38, 38,0.12); color: var(--accent); }
     .badge-success { background: rgba(16,185,129,0.12); color: var(--success); }
     .badge-warning { background: rgba(245,158,11,0.12); color: var(--warning); }
     .badge-danger { background: rgba(239,68,68,0.12); color: var(--danger); }
-    .badge-info { background: rgba(59,130,246,0.12); color: var(--info); }
+    .badge-info { background: rgba(163, 163, 163,0.12); color: var(--info); }
 
     /* Tags */
     .tag {
@@ -445,11 +445,11 @@
       font-size: 11px;
       font-weight: 500;
     }
-    .tag-primary { background: rgba(13,148,136,0.12); color: var(--accent); }
+    .tag-primary { background: rgba(220, 38, 38,0.12); color: var(--accent); }
     .tag-success { background: rgba(16,185,129,0.12); color: var(--success); }
     .tag-warning { background: rgba(245,158,11,0.12); color: var(--warning); }
     .tag-danger { background: rgba(239,68,68,0.12); color: var(--danger); }
-    .tag-info { background: rgba(59,130,246,0.12); color: var(--info); }
+    .tag-info { background: rgba(163, 163, 163,0.12); color: var(--info); }
 
     /* Grids */
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
@@ -525,7 +525,7 @@
     .alert-danger { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); color: var(--danger); }
     .alert-success { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); color: var(--success); }
     .alert-warning { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.2); color: var(--warning); }
-    .alert-info { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2); color: var(--info); }
+    .alert-info { background: rgba(163, 163, 163,0.1); border: 1px solid rgba(163, 163, 163,0.2); color: var(--info); }
 
     /* Modal */
     .modal-overlay {
@@ -731,7 +731,7 @@
       color: var(--text-muted);
       transition: var(--transition);
     }
-    .wizard-step.active { border-color: var(--accent); color: var(--accent); background: rgba(13,148,136,0.08); }
+    .wizard-step.active { border-color: var(--accent); color: var(--accent); background: rgba(220, 38, 38,0.08); }
     .wizard-step.completed { border-color: var(--success); color: var(--success); }
 
     /* Tabs */
@@ -804,7 +804,7 @@
     }
     .calendar-day:hover { background: var(--bg-card-hover); }
     .calendar-day.today { border: 1px solid var(--accent); color: var(--accent); }
-    .calendar-day.has-event { background: rgba(13,148,136,0.15); color: var(--accent); }
+    .calendar-day.has-event { background: rgba(220, 38, 38,0.15); color: var(--accent); }
     .calendar-day.empty { background: none; cursor: default; }
     .calendar-day.other-month { color: var(--text-muted); }
   </style>
@@ -1096,7 +1096,7 @@
           </div>
 
           <!-- Welcome Banner -->
-          <div class="card" style="margin-bottom:24px;background:linear-gradient(135deg,rgba(13,148,136,0.08),rgba(13,148,136,0.02));border-color:rgba(13,148,136,0.15);">
+          <div class="card" style="margin-bottom:24px;background:linear-gradient(135deg,rgba(220, 38, 38,0.08),rgba(220, 38, 38,0.02));border-color:rgba(220, 38, 38,0.15);">
             <h2 style="font-size:22px;font-weight:700;margin-bottom:8px;">Welcome to <span class="text-gradient-primary">JobAI</span></h2>
             <p style="color:var(--text-secondary);font-size:14px;">Your intelligent job application assistant. Track applications, optimize resumes, and land your dream job with AI-powered tools.</p>
           </div>

@@ -99,7 +99,7 @@ function InterviewScheduler() {
 
   const getStatusColor = (status) => {
     const colors = {
-      scheduled: '#6b7280',
+      scheduled: '#9ca3af',
       completed: '#059669',
       cancelled: '#dc2626',
       rescheduled: '#d97706',
